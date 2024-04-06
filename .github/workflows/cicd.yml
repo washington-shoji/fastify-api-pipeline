@@ -78,8 +78,8 @@ jobs:
           PGPASSWORD: testpass
           PGDATABASE: testdb
           PGPORT: 5432
-        run: npm start
-      - run: sleep 10
+        run: npm run build
+      - run: npm run start & sleep 10
         # Adding a sleep command to allow some time for the server to start and migrations to run
 
       - name: Run integration tests
