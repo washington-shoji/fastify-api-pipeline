@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS addresses (
+    id UUID PRIMARY KEY,
+    event_id INTEGER UNIQUE REFERENCES events(id) ON DELETE CASCADE,
+    street VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    postal_code VARCHAR(20),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
