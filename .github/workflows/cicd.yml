@@ -45,6 +45,16 @@ jobs:
             sleep 2
           done
 
+      - name: Start server and run migrations
+        env:
+          PGHOST: localhost
+          PGUSER: testuser
+          PGPASSWORD: testpass
+          PGDATABASE: testdb
+          PGPORT: 5432
+        run: npm start & sleep 10
+        # Adding a sleep command to allow some time for the server to start and migrations to run
+
       - name: Run integration tests
         env:
           PGHOST: localhost
@@ -76,8 +86,8 @@ jobs:
       #   - name: Run linting
       #     run: npm run lint
 
-      - name: Run tests
-        run: npm test
+      - name: Run unit tests
+        run: npm test:unit
 
     #   - name: Build the project
     #     run: npm run build
