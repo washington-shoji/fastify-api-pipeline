@@ -63,9 +63,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testdb
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -100,20 +100,14 @@ jobs:
 
       - name: Start server and run migrations
         env:
-          PGHOST: localhost
-          PGUSER: testuser
-          PGPASSWORD: testpass
-          PGDATABASE: testdb
-          PGPORT: 5432
+          PGHOST: ${{secrets.PGHOST}}
+          PGUSER: ${{secrets.PGUSER}}
+          PGPASSWORD: ${{secrets.PGPASSWORD}}
+          PGDATABASE: ${{secrets.PGDATABASE}}
+          PGPORT: ${{secrets.PGPORT}}
         run: npm run build
       - run: npm run start & sleep 10
         # Adding a sleep command to allow some time for the server to start and migrations to run
 
       - name: Run integration tests
-        env:
-          PGHOST: localhost
-          PGUSER: testuser
-          PGPASSWORD: testpass
-          PGDATABASE: testdb
-          PGPORT: 5432
         run: npm run test:integration
