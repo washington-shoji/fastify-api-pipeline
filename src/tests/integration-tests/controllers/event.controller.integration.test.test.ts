@@ -74,7 +74,6 @@ describe('Event Controllers - createEventController', () => {
 describe('Event Controllers - updateEventController', () => {
 	let app: FastifyInstance;
 	let testEvent: EventModel;
-	const createdEventIds: string[] = [];
 
 	beforeAll(async () => {
 		app = fastify();
@@ -85,20 +84,17 @@ describe('Event Controllers - updateEventController', () => {
 
 		// Create an event to update later
 		testEvent = await createEventService({
-			title: 'Initial Event',
+			title: 'Initial  Event To Update',
 			description: 'Initial Description',
 			start_time: new Date(),
 			end_time: new Date(),
 			location: 'Initial Location',
 		});
-		createdEventIds.push(testEvent.id as string);
 	});
 
 	afterAll(async () => {
 		// Teardown: Delete all created/updated events to clean up the database
-		for (const eventId of createdEventIds) {
-			await deleteEventService(eventId);
-		}
+		await deleteEventService(testEvent.id as string);
 		await app.close();
 	});
 
