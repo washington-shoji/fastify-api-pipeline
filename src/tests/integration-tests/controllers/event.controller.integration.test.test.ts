@@ -110,13 +110,20 @@ describe('Event Controllers - updateEventController', () => {
 		const response = await app.inject({
 			method: 'PUT',
 			url: `/events/${testEvent.id}`,
-			payload: updatedEventData,
+			payload: {
+				title: 'Updated Event',
+				description: 'Initial Description',
+				start_time: new Date(),
+				end_time: new Date(),
+				location: 'Updated Location',
+			},
 		});
 
 		expect(response.statusCode).toBe(200);
 		const updatedEvent = JSON.parse(response.body);
 		expect(updatedEvent.title).toBe(updatedEventData.title);
 		expect(updatedEvent.description).toBe(updatedEventData.description);
+		expect(updatedEvent.location).toBe(updatedEventData.location);
 		// Further assertions as needed
 	});
 
