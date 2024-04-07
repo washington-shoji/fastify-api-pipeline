@@ -84,13 +84,27 @@ export async function findEventById(id: string) {
 	const uuid = parseUUID(id);
 	const query = `SELECT * FROM events WHERE id = $1`;
 	const client = await pool.connect();
-	const result = await client.query(query, [uuid]);
-	return result.rows[0];
+
+	try {
+		const result = await client.query(query, [uuid]);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function getEvents() {
 	const query = `SELECT * FROM events`;
 	const client = await pool.connect();
-	const result = await client.query(query);
-	return result.rows;
+
+	try {
+		const result = await client.query(query);
+		return result.rows;
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
 }
