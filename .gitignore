@@ -1,9 +1,11 @@
+# node modules
 node_modules
-.env
-.example.env
 
-# testing
-/coverage
+# environment variables
+.env
+
+# testing reports
+coverage
 
 # build
 /dist
