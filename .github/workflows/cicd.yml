@@ -106,6 +106,7 @@ jobs:
           PGDATABASE: ${{secrets.PGDATABASE}}
           PGPORT: ${{secrets.PGPORT}}
         run: npm run build
+      - run: psql -d "postgres://${{secrets.PGUSER}}:${{secrets.PGPASSWORD}}@${{secrets.PGHOST}}:${{secrets.PGPORT}}/${{secrets.PGDATABASE}}" -c "DROP TABLE IF EXISTS events CASCADE;"
       - run: npm run start & sleep 10
         # Adding a sleep command to allow some time for the server to start and migrations to run
 
