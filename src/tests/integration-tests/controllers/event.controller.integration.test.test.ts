@@ -14,23 +14,21 @@ import {
 
 describe('Event Controllers - createEventController', () => {
 	let app: FastifyInstance;
-	const createdEventIds: string[] = [];
+	let createdEventId: string;
 
-	beforeAll(() => {
+	beforeEach(() => {
 		app = fastify();
 		app.post<{ Body: EventModel }>('/events', createEventController);
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		// Teardown: Delete all created events to clean up the database
-		for (const eventId of createdEventIds) {
-			await deleteEventService(eventId); // Assuming deleteEventService is your service function for deleting events
-		}
+		await deleteEventService(createdEventId);
 		await app.close();
 	});
 
 	it('should create an event and return 201 status', async () => {
-		const mockEvent: EventModel = {
+		const testEventData: EventModel = {
 			title: 'Test Event',
 			description: 'Test Description',
 			start_time: new Date(),
@@ -41,24 +39,17 @@ describe('Event Controllers - createEventController', () => {
 		const response = await app.inject({
 			method: 'POST',
 			url: '/events',
-			payload: mockEvent,
+			payload: testEventData,
 		});
 
 		expect(response.statusCode).toBe(201);
 		const createdEvent = JSON.parse(response.body);
-		createdEventIds.push(createdEvent.id); // Store the created event ID for cleanup
+		createdEventId = createdEvent.id;
 		// Further assertions can be made on the response body if necessary
 	});
 
 	// Additional test to simulate a failure scenario
 	it('should return 500 status on service failure', async () => {
-		// Mock the createEventService to throw an error
-		jest.mock('../../../services/event.service', () => ({
-			createEventService: jest
-				.fn()
-				.mockRejectedValue(new Error('Service Error')),
-		}));
-
 		const response = await app.inject({
 			method: 'POST',
 			url: '/events',
@@ -73,7 +64,7 @@ describe('Event Controllers - updateEventController', () => {
 	let app: FastifyInstance;
 	let testEvent: EventModel;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		app = fastify();
 		app.put<{ Params: { id: string }; Body: EventModel }>(
 			'/events/:id',
@@ -90,14 +81,14 @@ describe('Event Controllers - updateEventController', () => {
 		});
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		// Teardown: Delete all created/updated events to clean up the database
 		await deleteEventService(testEvent.id as string);
 		await app.close();
 	});
 
 	it('should update an event and return the updated event', async () => {
-		const updatedEventData: EventModel = {
+		const updateEventData: EventModel = {
 			title: 'Updated Event',
 			description: testEvent.description,
 			start_time: testEvent.start_time,
@@ -108,14 +99,14 @@ describe('Event Controllers - updateEventController', () => {
 		const response = await app.inject({
 			method: 'PUT',
 			url: `/events/${testEvent.id}`,
-			payload: updatedEventData,
+			payload: updateEventData,
 		});
 
 		expect(response.statusCode).toBe(200);
 		const updatedEvent = JSON.parse(response.body);
-		expect(updatedEvent.title).toBe(updatedEventData.title);
-		expect(updatedEvent.description).toBe(updatedEventData.description);
-		expect(updatedEvent.location).toBe(updatedEventData.location);
+		expect(updatedEvent.title).toBe(updateEventData.title);
+		expect(updatedEvent.description).toBe(updateEventData.description);
+		expect(updatedEvent.location).toBe(updateEventData.location);
 		// Further assertions as needed
 	});
 
@@ -138,7 +129,7 @@ describe('Event Controllers - deleteEventController', () => {
 	let app: FastifyInstance;
 	let testEventId: string;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		app = fastify();
 		app.delete<{ Params: { id: string } }>(
 			'/events/:id',
@@ -156,13 +147,9 @@ describe('Event Controllers - deleteEventController', () => {
 		testEventId = testEvent.id;
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		// Clean up: Ensure the test event is deleted (in case the test failed to delete it)
-		try {
-			await deleteEventService(testEventId);
-		} catch (error) {
-			console.log(`Cleanup failed for event ID ${testEventId}:`, error);
-		}
+		await deleteEventService(testEventId);
 		await app.close();
 	});
 
@@ -198,7 +185,7 @@ describe('Event Controllers - findEventByIdController', () => {
 	let app: FastifyInstance;
 	let testEvent: EventModel;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		app = fastify();
 		app.get<{ Params: { id: string } }>('/events/:id', findEventByIdController);
 
@@ -212,7 +199,7 @@ describe('Event Controllers - findEventByIdController', () => {
 		});
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		// Clean up: Delete the test event
 		await deleteEventService(testEvent.id as string);
 		await app.close();
@@ -248,7 +235,7 @@ describe('Event Controllers - getEventsController', () => {
 	let app: FastifyInstance;
 	const createdEventIds: string[] = [];
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		app = fastify();
 		app.get('/events', getEventsController);
 
@@ -272,11 +259,14 @@ describe('Event Controllers - getEventsController', () => {
 		createdEventIds.push(event2.id);
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		// Clean up: Delete all created events
-		for (const eventId of createdEventIds) {
+		createdEventIds.forEach(async (eventId) => {
 			await deleteEventService(eventId);
-		}
+		});
+		// for (const eventId of createdEventIds) {
+		// 	await deleteEventService(eventId);
+		// }
 		await app.close();
 	});
 
