@@ -105,7 +105,10 @@ describe('Event Controllers - updateEventController', () => {
 	it('should update an event and return the updated event', async () => {
 		const updatedEventData: Partial<EventModel> = {
 			title: 'Updated Event',
-			description: 'Updated Description',
+			description: 'Initial Description',
+			start_time: new Date(),
+			end_time: new Date(),
+			location: 'Updated Location',
 		};
 
 		const response = await app.inject({
