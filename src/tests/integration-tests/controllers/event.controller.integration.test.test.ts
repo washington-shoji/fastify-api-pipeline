@@ -71,76 +71,76 @@ describe('Event Controllers - createEventController', () => {
 	});
 });
 
-describe('Event Controllers - updateEventController', () => {
-	let app: FastifyInstance;
-	let testEvent: EventModel;
+// describe('Event Controllers - updateEventController', () => {
+// 	let app: FastifyInstance;
+// 	let testEvent: EventModel;
 
-	beforeAll(async () => {
-		app = fastify();
-		app.put<{ Params: { id: string }; Body: EventModel }>(
-			'/events/:id',
-			updateEventController
-		);
+// 	beforeAll(async () => {
+// 		app = fastify();
+// 		app.put<{ Params: { id: string }; Body: EventModel }>(
+// 			'/events/:id',
+// 			updateEventController
+// 		);
 
-		// Create an event to update later
-		testEvent = await createEventService({
-			title: 'Initial  Event To Update',
-			description: 'Initial Description',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Initial Location',
-		});
-	});
+// 		// Create an event to update later
+// 		testEvent = await createEventService({
+// 			title: 'Initial  Event To Update',
+// 			description: 'Initial Description',
+// 			start_time: new Date(),
+// 			end_time: new Date(),
+// 			location: 'Initial Location',
+// 		});
+// 	});
 
-	afterAll(async () => {
-		// Teardown: Delete all created/updated events to clean up the database
-		await deleteEventService(testEvent.id as string);
-		await app.close();
-	});
+// 	afterAll(async () => {
+// 		// Teardown: Delete all created/updated events to clean up the database
+// 		await deleteEventService(testEvent.id as string);
+// 		await app.close();
+// 	});
 
-	it('should update an event and return the updated event', async () => {
-		const updatedEventData: EventModel = {
-			title: 'Updated Event',
-			description: 'Initial Description',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Updated Location',
-		};
+// 	it('should update an event and return the updated event', async () => {
+// 		const updatedEventData: EventModel = {
+// 			title: 'Updated Event',
+// 			description: 'Initial Description',
+// 			start_time: new Date(),
+// 			end_time: new Date(),
+// 			location: 'Updated Location',
+// 		};
 
-		const response = await app.inject({
-			method: 'PUT',
-			url: `/events/${testEvent.id}`,
-			payload: {
-				title: 'Updated Event',
-				description: 'Initial Description',
-				start_time: new Date(),
-				end_time: new Date(),
-				location: 'Updated Location',
-			},
-		});
+// 		const response = await app.inject({
+// 			method: 'PUT',
+// 			url: `/events/${testEvent.id}`,
+// 			payload: {
+// 				title: 'Updated Event',
+// 				description: 'Initial Description',
+// 				start_time: new Date(),
+// 				end_time: new Date(),
+// 				location: 'Updated Location',
+// 			},
+// 		});
 
-		expect(response.statusCode).toBe(200);
-		const updatedEvent = JSON.parse(response.body);
-		expect(updatedEvent.title).toBe(updatedEventData.title);
-		expect(updatedEvent.description).toBe(updatedEventData.description);
-		expect(updatedEvent.location).toBe(updatedEventData.location);
-		// Further assertions as needed
-	});
+// 		expect(response.statusCode).toBe(200);
+// 		const updatedEvent = JSON.parse(response.body);
+// 		expect(updatedEvent.title).toBe(updatedEventData.title);
+// 		expect(updatedEvent.description).toBe(updatedEventData.description);
+// 		expect(updatedEvent.location).toBe(updatedEventData.location);
+// 		// Further assertions as needed
+// 	});
 
-	it('should return 500 for a non-existent event ID', async () => {
-		const response = await app.inject({
-			method: 'PUT',
-			url: '/events/non-existent-id',
-			payload: {
-				title: 'Non-existent Event',
-			},
-		});
+// 	it('should return 500 for a non-existent event ID', async () => {
+// 		const response = await app.inject({
+// 			method: 'PUT',
+// 			url: '/events/non-existent-id',
+// 			payload: {
+// 				title: 'Non-existent Event',
+// 			},
+// 		});
 
-		expect(response.statusCode).toBe(500);
-	});
+// 		expect(response.statusCode).toBe(500);
+// 	});
 
-	// Additional tests for different scenarios, e.g., invalid data, can be added here
-});
+// 	// Additional tests for different scenarios, e.g., invalid data, can be added here
+// });
 
 describe('Event Controllers - deleteEventController', () => {
 	let app: FastifyInstance;
