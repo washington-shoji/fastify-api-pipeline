@@ -99,7 +99,7 @@ describe('Event Controllers - updateEventController', () => {
 	});
 
 	it('should update an event and return the updated event', async () => {
-		const updatedEventData: Partial<EventModel> = {
+		const updatedEventData: EventModel = {
 			title: 'Updated Event',
 			description: 'Initial Description',
 			start_time: new Date(),
