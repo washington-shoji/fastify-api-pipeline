@@ -29,7 +29,7 @@ describe('Event Controllers - createEventController', () => {
 
 	it('should create an event and return 201 status', async () => {
 		const testEventData: EventModel = {
-			title: 'Test Event',
+			title: 'TEST Event',
 			description: 'Test Description',
 			start_time: new Date(),
 			end_time: new Date(),
@@ -73,7 +73,7 @@ describe('Event Controllers - updateEventController', () => {
 
 		// Create a test event to fetch later
 		testEvent = await createEventService({
-			title: 'Event to Update',
+			title: 'TEST Event to Update',
 			description: 'This event will be updated in the test',
 			start_time: new Date(),
 			end_time: new Date(),
@@ -89,7 +89,7 @@ describe('Event Controllers - updateEventController', () => {
 
 	it('should update an event and return the updated event', async () => {
 		const updateEventData: EventModel = {
-			title: 'Updated Event',
+			title: 'TEST Updated Event',
 			description: testEvent.description,
 			start_time: testEvent.start_time,
 			end_time: testEvent.end_time,
@@ -138,7 +138,7 @@ describe('Event Controllers - deleteEventController', () => {
 
 		// Create an event to delete later
 		const testEvent = await createEventService({
-			title: 'Event to Delete',
+			title: 'TEST Event to Delete',
 			description: 'This event will be deleted in the tests',
 			start_time: new Date(),
 			end_time: new Date(),
@@ -191,7 +191,7 @@ describe('Event Controllers - findEventByIdController', () => {
 
 		// Create a test event to fetch later
 		testEvent = await createEventService({
-			title: 'Event to Find',
+			title: 'TEST Event to Find',
 			description: 'This event will be fetched in the tests',
 			start_time: new Date(),
 			end_time: new Date(),
@@ -241,7 +241,7 @@ describe('Event Controllers - getEventsController', () => {
 
 		// Create a couple of test events to be fetched later
 		const event1 = await createEventService({
-			title: 'Event 1',
+			title: 'TEST Event 1',
 			description: 'Description 1',
 			start_time: new Date(),
 			end_time: new Date(),
@@ -250,7 +250,7 @@ describe('Event Controllers - getEventsController', () => {
 		createdEventIds.push(event1.id);
 
 		const event2 = await createEventService({
-			title: 'Event 2',
+			title: 'TEST Event 2',
 			description: 'Description 2',
 			start_time: new Date(),
 			end_time: new Date(),
