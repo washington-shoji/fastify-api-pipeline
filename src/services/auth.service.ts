@@ -16,8 +16,8 @@ export async function registerUserService(
 	email: string,
 	password: string
 ) {
-	const hashedPassword = await bcrypt.hash(password, 10); // Hash the password with a salt round of 10
-
+	// Hash the password with a salt round of 10
+	const hashedPassword = await bcrypt.hash(password, 10);
 	const userData: UserAuthModel = {
 		username: username,
 		email: email,
@@ -40,12 +40,12 @@ export async function loginUserService(
 	const user = await loginUser(userData);
 
 	if (!user) {
-		throw new Error('User not found');
+		throw new Error('Unauthorized');
 	}
 
 	const isValid = await bcrypt.compare(password, user.password);
 	if (!isValid) {
-		throw new Error('Invalid password');
+		throw new Error('Unauthorized');
 	}
 
 	const accessToken = jwt.sign(

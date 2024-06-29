@@ -6,7 +6,7 @@ export async function registerUser(userData: UserAuthModel) {
 	const { username, email, password } = userData;
 	const uuid = generateUUIDv7();
 	const result = await pool.query(
-		`INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email`,
+		`INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email`,
 		[uuid, username, email, password]
 	);
 	return result.rows[0];
@@ -14,6 +14,7 @@ export async function registerUser(userData: UserAuthModel) {
 
 export async function loginUser(userData: UserAuthModel) {
 	const { username, email } = userData;
+	console.log('userData', userData);
 	const result = await pool.query(
 		`SELECT * FROM users WHERE username = $1 AND email = $2`,
 		[username, email]
@@ -24,13 +25,14 @@ export async function loginUser(userData: UserAuthModel) {
 
 export async function storeRefreshToken(userId: string, refreshToken: string) {
 	const expiresAt = new Date();
-	const uuid = parseUUID(userId);
+	const uuid = generateUUIDv7();
+	const userUuid = parseUUID(userId);
 	expiresAt.setDate(expiresAt.getDate() + 7); // Set expiry date to 7 days from now
 
 	// Insert refreshToken into the database
 	await pool.query(
-		`INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)`,
-		[uuid, refreshToken, expiresAt]
+		`INSERT INTO refresh_tokens (id, user_id, token, expires_at) VALUES ($1, $2, $3, $4)`,
+		[uuid, userUuid, refreshToken, expiresAt]
 	);
 }
 
