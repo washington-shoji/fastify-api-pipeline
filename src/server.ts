@@ -2,6 +2,7 @@
 
 import fastify from 'fastify';
 import multipart from '@fastify/multipart';
+import cors from '@fastify/cors';
 import eventRoutes from './routes/event.route';
 import authRoutes from './routes/auth.route';
 import runMigrations from './database/dbMigrate';
@@ -10,8 +11,12 @@ import logger from './utils/logger.utils';
 import eventAddressRoutes from './routes/event-address.route';
 import eventImageRoutes from './routes/event-image.route';
 
-const app = fastify({ logger: false });
+const app = fastify({ logger: true });
 
+app.register(cors, {
+	origin: 'http://localhost:4200',
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+});
 app.register(multipart);
 
 // Register event routes

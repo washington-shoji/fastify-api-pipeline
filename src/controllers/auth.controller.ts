@@ -43,7 +43,7 @@ export async function loginController(
 		reply.send({ userResponse, accessToken, refreshToken });
 	} catch (error) {
 		console.log('ERROR', error);
-		reply.code(401).send({ message: 'Login failed' });
+		reply.code(401).send({ message: 'Unauthorized' });
 	}
 }
 
@@ -59,7 +59,7 @@ export async function refreshTokenController(
 	const { refreshToken, userId } = request.body;
 
 	if (!refreshToken) {
-		return reply.code(401).send({ message: 'Refresh Token Required' });
+		return reply.code(401).send({ message: 'Unauthorized' });
 	}
 
 	// Validate the refresh token
@@ -70,13 +70,13 @@ export async function refreshTokenController(
 			String(process.env.REFRESH_TOKEN_SECRET).replace(/\\n/g, '\n')
 		);
 	} catch (error) {
-		return reply.code(403).send({ message: 'Invalid Refresh Token' });
+		return reply.code(403).send({ message: 'Forbidden' });
 	}
 
 	// Check if the refresh token exists in the database and is not expired
 	const tokenExists = await checkRefreshTokenInDB(userId, refreshToken);
 	if (!tokenExists) {
-		return reply.code(403).send({ message: 'Invalid Refresh Token' });
+		return reply.code(403).send({ message: 'Forbidden' });
 	}
 
 	// Generate a new access token
