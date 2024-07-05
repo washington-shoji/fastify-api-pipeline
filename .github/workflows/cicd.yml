@@ -105,6 +105,7 @@ jobs:
           PGPASSWORD: ${{secrets.PGPASSWORD}}
           PGDATABASE: ${{secrets.PGDATABASE}}
           PGPORT: ${{secrets.PGPORT}}
+          DB_CONNECTION_STRING: 'postgres://${{secrets.PGUSER}}:${{secrets.PGPASSWORD}}@${{secrets.PGHOST}}:5432/${{secrets.PGDATABASE}}'
         run: npm run build
 
       - run: npm run start & sleep 10
