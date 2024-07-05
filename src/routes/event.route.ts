@@ -5,11 +5,17 @@ import {
 	getEventsController,
 	updateEventController,
 	deleteEventController,
+	getUserEventsController,
 } from '../controllers/event.controller';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 export default async function eventRoutes(fastify: FastifyInstance) {
+	fastify.addHook('preHandler', authMiddleware);
 	// Create Event
 	fastify.post('/events', createEventController);
+
+	// Get All Events
+	fastify.get('/user-events', getUserEventsController);
 
 	// Get All Events
 	fastify.get('/events', getEventsController);

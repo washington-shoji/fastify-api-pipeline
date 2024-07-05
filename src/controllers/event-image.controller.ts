@@ -7,6 +7,7 @@ import {
 	updateEventImageService,
 } from '../services/event-image.service';
 import { findEventImageById } from '../repositories/event-image.repository';
+import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 
 export async function createEventImageController(
 	request: FastifyRequest<{
@@ -18,6 +19,13 @@ export async function createEventImageController(
 	reply: FastifyReply
 ) {
 	try {
+		const token = request.headers.authorization?.split(' ')[1]; // Bearer TOKEN
+		const decoded = decodeToken(token);
+		const userId = decoded?.userId;
+		if (!userId) {
+			return reply.code(401).send({ message: 'Unauthorized' });
+		}
+
 		const eventId = request.query.eventId;
 		const file = await request.file();
 
@@ -25,7 +33,7 @@ export async function createEventImageController(
 			throw new Error('No event id or file was provided');
 		}
 
-		const eventImage = await createEventImageService(eventId, file);
+		const eventImage = await createEventImageService(eventId, userId, file);
 
 		reply.code(201).send({
 			imageData: {

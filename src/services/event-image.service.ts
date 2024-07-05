@@ -13,6 +13,7 @@ import { findEventById } from '../repositories/event.repository';
 
 export async function createEventImageService(
 	eventId: string,
+	userId: string,
 	file: MultipartFile
 ) {
 	try {
@@ -21,7 +22,7 @@ export async function createEventImageService(
 		const fileName = data?.filename;
 		const bucketName = process.env.S3_BUCKET as string;
 
-		const existingEvent = await findEventById(eventId);
+		const existingEvent = await findEventById(eventId, userId);
 
 		if (!existingEvent) {
 			throw new Error('Event does not exists');
