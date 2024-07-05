@@ -66,6 +66,7 @@ jobs:
           POSTGRES_USER: ${{secrets.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
           POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+          DB_CONNECTION_STRING: 'postgres://${{secrets.PGUSER}}:${{secrets.PGPASSWORD}}@${{secrets.PGHOST}}:5432/${{secrets.PGDATABASE}}'
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -105,10 +106,13 @@ jobs:
           PGPASSWORD: ${{secrets.PGPASSWORD}}
           PGDATABASE: ${{secrets.PGDATABASE}}
           PGPORT: ${{secrets.PGPORT}}
-          DB_CONNECTION_STRING: 'postgres://${{secrets.PGUSER}}:${{secrets.PGPASSWORD}}@${{secrets.PGHOST}}:5432/${{secrets.PGDATABASE}}'
         run: npm run build
 
-      - run: npm run start & sleep 10
+      - name: Test postgres connection
+        run: psql postgres://${{secrets.PGUSER}}:${{secrets.PGPASSWORD}}@${{secrets.PGHOST}}:5432/${{secrets.PGDATABASE}} -c 'SELECT 1;'
+
+      - name: Start sever
+        run: npm run start & sleep 10
         # Adding a sleep command to allow some time for the server to start and migrations to run
 
       - name: Run integration tests
