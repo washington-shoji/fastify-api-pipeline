@@ -14,7 +14,6 @@ export async function registerUser(userData: UserAuthModel) {
 
 export async function loginUser(userData: UserAuthModel) {
 	const { username, email } = userData;
-	console.log('userData', userData);
 	const result = await pool.query(
 		`SELECT * FROM users WHERE username = $1 AND email = $2`,
 		[username, email]
@@ -42,7 +41,7 @@ export async function checkRefreshTokenInDB(
 ) {
 	const uuid = parseUUID(userId);
 	const { rows } = await pool.query(
-		`SELECT * FROM refresh_tokens WHERE user_id = $1 AND token = $2 AND expires_at > NOW() AND revoked = FALSE`,
+		`SELECT * FROM refresh_tokens WHERE user_id = $1 AND token = $2 AND expires_at > NOW() AND revoked IS NOT TRUE`,
 		[uuid, refreshToken]
 	);
 

@@ -1,21 +1,24 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
-import jwt from 'jsonwebtoken';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import logger from '../utils/logger.utils';
+import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 
 export async function authMiddleware(
 	request: FastifyRequest,
-	reply: FastifyReply,
-	done: Function
+	reply: FastifyReply
 ) {
 	try {
 		const token = request.headers.authorization?.split(' ')[1]; // Bearer TOKEN
+
 		if (!token) {
-			throw new Error('No token provided');
+			reply.code(401).send({ message: 'Unauthorized' });
+			//throw new Error('No token provided');
 		}
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-		// request.user = decoded; // Add the user payload to the request object
-		done(); // Proceed to the next middleware or route handler
+		const decodedToken = decodeToken(token);
+		if (!decodedToken) {
+			reply.code(401).send({ message: 'Unauthorized' });
+			//throw new Error('No token provided');
+		}
 	} catch (error) {
 		reply.code(401).send({ message: 'Unauthorized' });
 		logger.error(error, 'Error Auth middleware');

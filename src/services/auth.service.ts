@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { UserAuthModel, UserResponseModel } from '../models/user-auth-model';
+import { UserAuthModel } from '../models/user-auth-model';
 import {
 	loginUser,
 	registerUser,
@@ -63,16 +63,10 @@ export async function loginUserService(
 		{ expiresIn: '7d' }
 	);
 
-	const userResponse: UserResponseModel = {
-		id: user.id,
-		username: user.username,
-		email: user.email,
-	};
-
 	// Store refreshToken in the database with its expiry date
 	await storeRefreshToken(user.id, refreshToken);
 
-	return { userResponse, accessToken, refreshToken };
+	return { accessToken, refreshToken };
 }
 
 export async function changeUserPassword(userId: string, newPassword: string) {
