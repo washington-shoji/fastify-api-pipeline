@@ -18,7 +18,6 @@ export async function uploadFileController(
 		const fileName = data.filename;
 		const bucketName = process.env.S3_BUCKET as string;
 		const response = await uploadImageFileToS3(buffer, fileName, bucketName);
-		console.log('response', response);
 		reply.code(201).send({ data: response.Location });
 	} catch (error) {
 		logger.error(error, 'Error handling uploadFileController');
