@@ -96,6 +96,7 @@ jobs:
       - name: Set environment variables
         run: |
           echo DB_CONNECTION_STRING=postgres://postgres:postgres@localhost:5432/postgres >> $GITHUB_ENV
+          echo JWT_SECRET >> $GITHUB_ENV
 
       - name: Wait for PostgreSQL to be ready
         run: |
