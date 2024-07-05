@@ -7,6 +7,7 @@ import {
 	registerUser,
 	revokeAllRefreshTokensForUser,
 	storeRefreshToken,
+	testDeleteUser,
 } from '../repositories/auth.repository';
 
 dotenv.config();
@@ -74,4 +75,8 @@ export async function changeUserPassword(userId: string, newPassword: string) {
 
 	// Revoke all existing refresh tokens for this user
 	await revokeAllRefreshTokensForUser(userId);
+}
+
+export async function testDeleteUserService(userId: string) {
+	return await testDeleteUser(userId);
 }

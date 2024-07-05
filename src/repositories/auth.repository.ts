@@ -62,3 +62,11 @@ export async function revokeAllRefreshTokensForUser(userId: string) {
 		[uuid]
 	);
 }
+
+export async function testDeleteUser(testUserId: string) {
+	const result = await pool.query(`DELETE FROM users WHERE id = $1 `, [
+		testUserId,
+	]);
+
+	return result.rows[0];
+}
