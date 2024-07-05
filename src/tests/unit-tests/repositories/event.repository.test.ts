@@ -44,7 +44,8 @@ describe('createEvent', () => {
 	});
 
 	it('should create an event and return the created event object', async () => {
-		const result = await createEvent(eventData);
+		const userId = 'mock-userUuid';
+		const result = await createEvent(userId, eventData);
 
 		expect(result).toEqual({ ...eventData, id: 'mock-uuid' });
 		expect(pool.connect).toHaveBeenCalled();
@@ -57,7 +58,10 @@ describe('createEvent', () => {
 			release: jest.fn(),
 		});
 
-		await expect(createEvent(eventData)).rejects.toThrow('Database error');
+		const userId = 'mock-userUuid';
+		await expect(createEvent(userId, eventData)).rejects.toThrow(
+			'Database error'
+		);
 		expect(pool.connect).toHaveBeenCalled();
 	});
 
@@ -71,7 +75,10 @@ describe('createEvent', () => {
 			release: jest.fn(),
 		});
 
-		await expect(createEvent(eventData)).rejects.toThrow('Insert error');
+		const userId = 'mock-userUuid';
+		await expect(createEvent(userId, eventData)).rejects.toThrow(
+			'Insert error'
+		);
 		// No need to check mockBegin since it's part of the mocked implementation
 		expect(pool.connect).toHaveBeenCalled();
 	});
@@ -90,7 +97,8 @@ describe('createEvent', () => {
 			release: mockRelease,
 		});
 
-		const result = await createEvent(eventData);
+		const userId = 'mock-userUuid';
+		const result = await createEvent(userId, eventData);
 		expect(result).toEqual({ ...eventData, id: 'mock-uuid' });
 		expect(mockCommit).toHaveBeenCalledTimes(1);
 		expect(mockRelease).toHaveBeenCalledTimes(1);
@@ -127,7 +135,8 @@ describe('deleteEvent', () => {
 				.mockResolvedValue({ rows: [deletedEventData], rowCount: 1 }),
 			release: jest.fn(),
 		});
-		const result = await deleteEvent(eventId);
+		const userId = 'mock-userUuid';
+		const result = await deleteEvent(eventId, userId);
 
 		// You might adjust the expectation based on your implementation's return value for delete operations
 		expect(result).toEqual(deletedEventData);
@@ -140,8 +149,10 @@ describe('deleteEvent', () => {
 			query: jest.fn().mockRejectedValue(new Error('Database error')),
 			release: jest.fn(),
 		});
-
-		await expect(deleteEvent(eventId)).rejects.toThrow('Database error');
+		const userId = 'mock-userUuid';
+		await expect(deleteEvent(eventId, userId)).rejects.toThrow(
+			'Database error'
+		);
 		expect(pool.connect).toHaveBeenCalled();
 	});
 
@@ -155,7 +166,8 @@ describe('deleteEvent', () => {
 			release: jest.fn(),
 		});
 
-		await expect(deleteEvent(eventId)).rejects.toThrow('Delete error');
+		const userId = 'mock-userUuid';
+		await expect(deleteEvent(eventId, userId)).rejects.toThrow('Delete error');
 		expect(pool.connect).toHaveBeenCalled();
 	});
 
@@ -173,7 +185,8 @@ describe('deleteEvent', () => {
 			release: mockRelease,
 		});
 
-		const result = await deleteEvent(eventId);
+		const userId = 'mock-userUuid';
+		const result = await deleteEvent(eventId, userId);
 		expect(result).toEqual(deletedEventData); // Adjust based on your implementation
 		expect(mockCommit).toHaveBeenCalledTimes(1);
 		expect(mockRelease).toHaveBeenCalledTimes(1);
@@ -204,7 +217,8 @@ describe('findEventByIdService', () => {
 	});
 
 	it('should find an event by ID and return it', async () => {
-		const result = await findEventById(eventId);
+		const userId = 'mock-userUuid';
+		const result = await findEventById(eventId, userId);
 
 		expect(result).toEqual(foundEvent);
 		expect(pool.connect).toHaveBeenCalled();
@@ -221,7 +235,8 @@ describe('findEventByIdService', () => {
 			release: jest.fn(),
 		});
 
-		await expect(findEventById(eventId)).rejects.toThrow(
+		const userId = 'mock-userUuid';
+		await expect(findEventById(eventId, userId)).rejects.toThrow(
 			'Failed to find event. Please try again later.'
 		);
 		expect(pool.connect).toHaveBeenCalled();
@@ -286,6 +301,7 @@ describe('getEventsService', () => {
 describe('updateEventService', () => {
 	const eventId = 'mock-uuid';
 	const updateData = {
+		userId: 'mock-userUuid',
 		title: 'Updated Event',
 		description: 'Updated description',
 		start_time: new Date(),
@@ -311,7 +327,8 @@ describe('updateEventService', () => {
 	});
 
 	it('should update an event successfully', async () => {
-		const result = await updateEvent(eventId, updateData);
+		const userId = 'mock-userUuid';
+		const result = await updateEvent(eventId, userId, updateData);
 
 		expect(result).toEqual(updatedEvent);
 		expect(pool.connect).toHaveBeenCalled();
@@ -332,7 +349,8 @@ describe('updateEventService', () => {
 			release: jest.fn(),
 		});
 
-		await expect(updateEvent(eventId, updateData)).rejects.toThrow(
+		const userId = 'mock-userUuid';
+		await expect(updateEvent(eventId, userId, updateData)).rejects.toThrow(
 			'Failed to update event. Please try again later.'
 		);
 		expect(pool.connect).toHaveBeenCalled();
@@ -352,7 +370,8 @@ describe('updateEventService', () => {
 			release: mockRelease,
 		});
 
-		const result = await updateEvent(eventId, updateData);
+		const userId = 'mock-userUuid';
+		const result = await updateEvent(eventId, userId, updateData);
 		expect(result).toEqual(updatedEvent); // Adjust based on your implementation
 		expect(mockCommit).toHaveBeenCalledTimes(1);
 		expect(mockRelease).toHaveBeenCalledTimes(1);

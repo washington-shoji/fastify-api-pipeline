@@ -14,8 +14,10 @@ jest.mock('../../../utils/logger.utils', () => ({
 }));
 
 describe('Event Service', () => {
+	const userId = 'mock-userUuid-1';
 	const mockEvent = {
-		id: '1',
+		id: 'mock-uuid',
+		userId: 'mock-userUuid-1',
 		title: 'Test Event',
 		description: 'Test description',
 		start_time: new Date(),
@@ -31,17 +33,17 @@ describe('Event Service', () => {
 		it('should create an event successfully', async () => {
 			(eventRepo.createEvent as jest.Mock).mockResolvedValue(mockEvent);
 
-			const result = await createEventService(mockEvent);
+			const result = await createEventService(userId, mockEvent);
 
 			expect(result).toEqual(mockEvent);
-			expect(eventRepo.createEvent).toHaveBeenCalledWith(mockEvent);
+			expect(eventRepo.createEvent).toHaveBeenCalledWith(userId, mockEvent);
 		});
 
 		it('should log an error and throw a custom error when creation fails', async () => {
 			const error = new Error('Failed to create event');
 			(eventRepo.createEvent as jest.Mock).mockRejectedValue(error);
 
-			await expect(createEventService(mockEvent)).rejects.toThrow(
+			await expect(createEventService(userId, mockEvent)).rejects.toThrow(
 				'Failed to create event. Please try again later.'
 			);
 
@@ -50,23 +52,23 @@ describe('Event Service', () => {
 	});
 
 	describe('findEventByIdService', () => {
-		const eventId = '1';
+		const eventId = 'mock-uuid';
 		const mockEvent = { id: eventId, title: 'Sample Event' }; // Add other necessary properties
 
 		it('should find an event by ID successfully', async () => {
 			(eventRepo.findEventById as jest.Mock).mockResolvedValue(mockEvent);
 
-			const result = await findEventByIdService(eventId);
+			const result = await findEventByIdService(eventId, userId);
 
 			expect(result).toEqual(mockEvent);
-			expect(eventRepo.findEventById).toHaveBeenCalledWith(eventId);
+			expect(eventRepo.findEventById).toHaveBeenCalledWith(eventId, userId);
 		});
 
 		it('should log an error and throw a custom error when finding by ID fails', async () => {
 			const error = new Error('Failed to find event');
 			(eventRepo.findEventById as jest.Mock).mockRejectedValue(error);
 
-			await expect(findEventByIdService(eventId)).rejects.toThrow(
+			await expect(findEventByIdService(eventId, userId)).rejects.toThrow(
 				'Failed to find event. Please try again later.'
 			);
 
@@ -78,16 +80,19 @@ describe('Event Service', () => {
 	});
 
 	describe('getEventsService', () => {
+		const userId = 'mock-userUuid-1';
 		const mockEvents = [
 			{
-				id: '1',
+				id: 'mock-uuid-1',
+				userId: userId,
 				title: 'Event 1',
 				start_time: new Date(),
 				end_time: new Date(),
 				location: 'Test Locaton',
 			},
 			{
-				id: '2',
+				id: 'mock-uuid-2',
+				userId: userId,
 				title: 'Event 2',
 				start_time: new Date(),
 				end_time: new Date(),
@@ -120,8 +125,9 @@ describe('Event Service', () => {
 	});
 
 	describe('updateEventService', () => {
-		const eventId = '1';
+		const eventId = 'mock-uuid';
 		const mockEventData = {
+			userId: userId,
 			title: 'Updated Event',
 			description: 'Test description',
 			start_time: new Date(),
@@ -133,11 +139,12 @@ describe('Event Service', () => {
 		it('should update an event successfully', async () => {
 			(eventRepo.updateEvent as jest.Mock).mockResolvedValue(updatedEvent);
 
-			const result = await updateEventService(eventId, mockEventData);
+			const result = await updateEventService(eventId, userId, mockEventData);
 
 			expect(result).toEqual(updatedEvent);
 			expect(eventRepo.updateEvent).toHaveBeenCalledWith(
 				eventId,
+				userId,
 				mockEventData
 			);
 		});
@@ -146,9 +153,9 @@ describe('Event Service', () => {
 			const error = new Error('Failed to update event');
 			(eventRepo.updateEvent as jest.Mock).mockRejectedValue(error);
 
-			await expect(updateEventService(eventId, mockEventData)).rejects.toThrow(
-				'Failed to update event. Please try again later.'
-			);
+			await expect(
+				updateEventService(eventId, userId, mockEventData)
+			).rejects.toThrow('Failed to update event. Please try again later.');
 
 			expect(logger.error).toHaveBeenCalledWith(
 				error,
@@ -158,21 +165,21 @@ describe('Event Service', () => {
 	});
 
 	describe('deleteEventService', () => {
-		const eventId = '1';
+		const eventId = 'mock-uuid';
 
 		it('should delete an event successfully', async () => {
 			(eventRepo.deleteEvent as jest.Mock).mockResolvedValue(undefined); // Assuming deleteEvent returns nothing on success
 
-			await deleteEventService(eventId);
+			await deleteEventService(eventId, userId);
 
-			expect(eventRepo.deleteEvent).toHaveBeenCalledWith(eventId);
+			expect(eventRepo.deleteEvent).toHaveBeenCalledWith(eventId, userId);
 		});
 
 		it('should log an error and throw a custom error when deletion fails', async () => {
 			const error = new Error('Failed to delete event');
 			(eventRepo.deleteEvent as jest.Mock).mockRejectedValue(error);
 
-			await expect(deleteEventService(eventId)).rejects.toThrow(
+			await expect(deleteEventService(eventId, userId)).rejects.toThrow(
 				'Failed to delete event. Please try again later.'
 			);
 
