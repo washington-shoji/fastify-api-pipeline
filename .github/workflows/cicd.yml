@@ -95,8 +95,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> $GITHUB_ENV
-          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> $GITHUB_ENV
+          echo DB_CONNECTION_STRING=postgres://postgres:postgres@localhost:5432/postgres >> $GITHUB_ENV
 
       - name: Wait for PostgreSQL to be ready
         run: |
