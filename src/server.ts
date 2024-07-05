@@ -10,6 +10,7 @@ import fileUploadRoutes from './routes/uploadfile.controller';
 import logger from './utils/logger.utils';
 import eventAddressRoutes from './routes/event-address.route';
 import eventImageRoutes from './routes/event-image.route';
+import publicEventRoutes from './routes/public-event.route';
 
 const app = fastify({ logger: true });
 
@@ -18,6 +19,9 @@ app.register(cors, {
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 });
 app.register(multipart);
+
+// Register public event routes
+app.register(publicEventRoutes, { prefix: '/api/v1' });
 
 // Register event routes
 app.register(eventRoutes, { prefix: '/api/v1' });
