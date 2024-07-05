@@ -100,12 +100,6 @@ jobs:
           done
 
       - name: Start server and run migrations
-        env:
-          PGHOST: 'localhost'
-          PGUSER: ${{secrets.POSTGRES_USER}}
-          PGPASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-          PGDATABASE: ${{secrets.POSTGRES_DB}}
-          PGPORT: 5432
         run: npm run build
 
       - name: Test postgres connection
