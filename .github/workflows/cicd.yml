@@ -67,6 +67,7 @@ jobs:
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
           POSTGRES_DB: ${{secrets.POSTGRES_DB}}
           DB_CONNECTION_STRING: 'postgres://${{secrets.POSTGRES_USER}}:${{secrets.POSTGRES_PASSWORD}}@localhost:5432/${{secrets.POSTGRES_DB}}'
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
