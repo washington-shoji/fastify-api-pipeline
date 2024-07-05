@@ -72,7 +72,7 @@ jobs:
           - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -92,6 +92,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Set environment variables
+        run: |
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> $GITHUB_ENV
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> $GITHUB_ENV
 
       - name: Wait for PostgreSQL to be ready
         run: |
