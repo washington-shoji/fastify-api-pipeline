@@ -1,4 +1,8 @@
-import { EventAddressModel } from '../models/event-address-model';
+import {
+	EventAddressModel,
+	EventAddressModelRequest,
+	EventAddressModelResponse,
+} from '../models/event-address-model';
 import {
 	createEventAddress,
 	deleteEventAddress,
@@ -9,28 +13,47 @@ import {
 import logger from '../utils/logger.utils';
 
 export async function createEventAddressService(
-	addressData: EventAddressModel
-) {
+	eventId: string,
+	addressData: EventAddressModelRequest
+): Promise<EventAddressModelResponse> {
 	try {
-		return await createEventAddress(addressData);
+		const eventAddressEntity: EventAddressModel = {
+			...addressData,
+			eventId: eventId,
+		};
+
+		const result: EventAddressModel = await createEventAddress(
+			eventAddressEntity
+		);
+
+		return responseDataTransformer(result);
 	} catch (error) {
 		logger.error(error, 'Error creating event address');
 		throw new Error('Failed to create event address. Please try again later.');
 	}
 }
 
-export async function findEventAddressByIdService(id: string) {
+export async function findEventAddressByIdService(
+	id: string,
+	eventId: string
+): Promise<EventAddressModelResponse> {
 	try {
-		return await findEventAddressById(id);
+		const result: EventAddressModel = await findEventAddressById(id, eventId);
+
+		return responseDataTransformer(result);
 	} catch (error) {
 		logger.error(error, 'Error finding event address');
 		throw new Error('Failed to find event address. Please try again later.');
 	}
 }
 
-export async function findEventAddressesService() {
+export async function findEventAddressesService(
+	eventId: string
+): Promise<EventAddressModelResponse[]> {
 	try {
-		return await getEventsAddresses();
+		const result: EventAddressModel[] = await getEventsAddresses(eventId);
+
+		return responseDataTransformerArray(result);
 	} catch (error) {
 		logger.error(error, 'Error finding event addresses');
 		throw new Error('Failed to find event addresses. Please try again later.');
@@ -39,21 +62,65 @@ export async function findEventAddressesService() {
 
 export async function updateEventAddressService(
 	id: string,
-	addressData: EventAddressModel
-) {
+	eventId: string,
+	addressData: EventAddressModelRequest
+): Promise<EventAddressModelResponse> {
 	try {
-		return await updateEventAddress(id, addressData);
+		const eventAddressEntity: EventAddressModel = {
+			...addressData,
+			eventId: eventId,
+		};
+		const result: EventAddressModel = await updateEventAddress(
+			id,
+			eventId,
+			eventAddressEntity
+		);
+
+		return responseDataTransformer(result);
 	} catch (error) {
 		logger.error(error, 'Error could not update event address');
 		throw new Error('Failed to update event. Please try again later.');
 	}
 }
 
-export async function deleteEventAddressService(id: string) {
+export async function deleteEventAddressService(
+	id: string,
+	eventId: string
+): Promise<string> {
 	try {
-		return await deleteEventAddress(id);
+		await deleteEventAddress(id, eventId);
+		return 'Deleted successfully';
 	} catch (error) {
 		logger.error(error, 'Error could not delete event address');
 		throw new Error('Failed to delete event address. Please try again later.');
 	}
+}
+
+function responseDataTransformer(
+	input: EventAddressModel
+): EventAddressModelResponse {
+	return <EventAddressModelResponse>{
+		id: input.id,
+		street: input.street,
+		city_suburb: input.city_suburb,
+		state: input.state,
+		country: input.country,
+		postal_code: input.postal_code,
+	};
+}
+
+function responseDataTransformerArray(
+	inputItems: EventAddressModel[]
+): EventAddressModelResponse[] {
+	return inputItems.map(
+		(input) =>
+			<EventAddressModelResponse>{
+				id: input.id,
+				street: input.street,
+				city_suburb: input.city_suburb,
+				state: input.state,
+				country: input.country,
+				postal_code: input.postal_code,
+			}
+	);
 }
