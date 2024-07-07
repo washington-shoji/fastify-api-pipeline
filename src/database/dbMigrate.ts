@@ -3,7 +3,13 @@ import path from 'path';
 import pool from './db';
 
 async function runMigrations() {
-	const migrationFiles = ['users.sql', 'events.sql', 'refresh_token.sql']; // Add more files as needed
+	const migrationFiles = [
+		'users.sql',
+		'events.sql',
+		'refresh_token.sql',
+		'event_addresses.sql',
+		'event_attendees.sql',
+	]; // Add more files as needed
 
 	for (const file of migrationFiles) {
 		const filePath = path.join(__dirname, 'sql', file);
