@@ -1,8 +1,9 @@
-CREATE TABLE IF NOT EXISTS attendees (
+CREATE TABLE IF NOT EXISTS event_attendees (
     id UUID PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID UNIQUE REFERENCES events(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    attendee_name VARCHAR(255) NOT NULL,
     status VARCHAR(50), -- e.g., 'going', 'interested', 'declined'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, event_id)
+    updated_at TIMESTAMP WITH TIME ZONE
 );
