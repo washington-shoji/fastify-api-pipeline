@@ -11,6 +11,7 @@ import logger from './utils/logger.utils';
 import eventAddressRoutes from './routes/event-address.route';
 import eventImageRoutes from './routes/event-image.route';
 import publicEventRoutes from './routes/public-event.route';
+import eventAttendeeRoutes from './routes/event-attendee.route';
 
 const app = fastify({ logger: true });
 
@@ -28,6 +29,7 @@ app.register(eventRoutes, { prefix: '/api/v1' });
 app.register(authRoutes, { prefix: '/api/v1' });
 app.register(eventAddressRoutes, { prefix: '/api/v1' });
 app.register(eventImageRoutes, { prefix: '/api/v1' });
+app.register(eventAttendeeRoutes, { prefix: '/api/v1' });
 app.register(fileUploadRoutes, { prefix: '/api/v1' });
 
 // Start the server

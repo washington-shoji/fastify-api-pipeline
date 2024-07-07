@@ -57,7 +57,7 @@ export async function findEventByIdController(
 		if (!event) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}
-		reply.send(event);
+		reply.code(200).send(event);
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
 			return reply.code(401).send({ message: 'Unauthorized' });
@@ -81,7 +81,7 @@ export async function getUserEventsController(
 		}
 
 		const events = await getUserEventsService(userId);
-		reply.send(events);
+		reply.code(200).send(events);
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
 			return reply.code(401).send({ message: 'Unauthorized' });
@@ -98,7 +98,7 @@ export async function getEventsController(
 ) {
 	try {
 		const events = await getEventsService();
-		reply.send(events);
+		reply.code(200).send(events);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving events' });
 		logger.error(error, 'Error handling getEventsController');
@@ -133,7 +133,7 @@ export async function updateEventController(
 		if (!updatedEvent) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}
-		reply.send(updatedEvent);
+		reply.code(200).send(updatedEvent);
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
 			return reply.code(401).send({ message: 'Unauthorized' });
@@ -168,8 +168,7 @@ export async function deleteEventController(
 			return reply.code(404).send({ message: 'Event not found' });
 		}
 
-		// No Content
-		reply.code(204).send();
+		reply.code(200).send({ message: 'Deleted successfully' });
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
 			return reply.code(401).send({ message: 'Unauthorized' });
