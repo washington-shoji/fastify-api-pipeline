@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import logger from '../utils/logger.utils';
-import { EventAddressModel } from '../models/event-address-model';
+import { EventAddressModelRequest } from '../models/event-address-model';
 import {
 	createEventAddressService,
 	deleteEventAddressService,
@@ -11,12 +11,19 @@ import {
 
 export async function createEventAddressController(
 	request: FastifyRequest<{
-		Body: EventAddressModel;
+		Params: {
+			eventId: string;
+		};
+		Body: EventAddressModelRequest;
 	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const newEventAddress = await createEventAddressService(request.body);
+		const eventId = request.params.eventId;
+		const newEventAddress = await createEventAddressService(
+			eventId,
+			request.body
+		);
 		reply.code(201).send(newEventAddress);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event address' });
@@ -28,16 +35,19 @@ export async function findEventAddressByIdController(
 	request: FastifyRequest<{
 		Params: {
 			id: string;
+			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const event = await findEventAddressByIdService(request.params.id);
+		const id = request.params.id;
+		const eventId = request.params.eventId;
+		const event = await findEventAddressByIdService(id, eventId);
 		if (!event) {
 			return reply.code(404).send({ message: 'Event address not found' });
 		}
-		reply.send(event);
+		reply.code(200).send(event);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving event address' });
 		logger.error(error, 'Error handling findEventAddressByIdController');
@@ -45,12 +55,18 @@ export async function findEventAddressByIdController(
 }
 
 export async function getEventsAddressesController(
-	request: FastifyRequest,
+	request: FastifyRequest<{
+		Params: {
+			id: string;
+			eventId: string;
+		};
+	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const events = await findEventAddressesService();
-		reply.send(events);
+		const eventId = request.params.eventId;
+		const events = await findEventAddressesService(eventId);
+		reply.code(200).send(events);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving events' });
 		logger.error(error, 'Error handling getEventsAddressController');
@@ -61,20 +77,24 @@ export async function updateEventAddressController(
 	request: FastifyRequest<{
 		Params: {
 			id: string;
+			eventId: string;
 		};
-		Body: EventAddressModel;
+		Body: EventAddressModelRequest;
 	}>,
 	reply: FastifyReply
 ) {
 	try {
+		const id = request.params.id;
+		const eventId = request.params.eventId;
 		const updatedEvent = await updateEventAddressService(
-			request.params.id,
+			id,
+			eventId,
 			request.body
 		);
 		if (!updatedEvent) {
 			return reply.code(404).send({ message: 'Event address not found' });
 		}
-		reply.send(updatedEvent);
+		reply.code(200).send(updatedEvent);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error updating event address' });
 		logger.error(error, 'Error handling updateEventAddressController');
@@ -85,18 +105,21 @@ export async function deleteEventAddressController(
 	request: FastifyRequest<{
 		Params: {
 			id: string;
+			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const deletedEvent = await deleteEventAddressService(request.params.id);
+		const id = request.params.id;
+		const eventId = request.params.eventId;
+		const deletedEvent = await deleteEventAddressService(id, eventId);
 		if (!deletedEvent) {
 			return reply.code(404).send({ message: 'Event address not found' });
 		}
-		reply.code(204).send();
+		reply.code(200).send({ message: deletedEvent });
 	} catch (error) {
 		reply.code(500).send({ message: 'Error deleting event address' });
-		logger.error(error, 'Error handling deleteEventAddressService');
+		logger.error(error, 'Error handling deleteEventAddressController');
 	}
 }
