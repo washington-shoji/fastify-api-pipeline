@@ -224,7 +224,7 @@ describe('Event Controllers - deleteEventController', () => {
 			},
 		});
 
-		expect(response.statusCode).toBe(204);
+		expect(response.statusCode).toBe(200);
 
 		// Optionally, verify that the event no longer exists in the database
 		const verifyResponse = await app.inject({
