@@ -6,6 +6,7 @@ import {
 	updateEventService,
 	deleteEventService,
 	getUserEventsService,
+	getOtherUsersEventsService,
 } from '../services/event.service';
 import { EventModel } from '../models/event-model';
 import logger from '../utils/logger.utils';
@@ -81,6 +82,30 @@ export async function getUserEventsController(
 		}
 
 		const events = await getUserEventsService(userId);
+		reply.code(200).send(events);
+	} catch (error) {
+		if (error instanceof TokenExpiredError) {
+			return reply.code(401).send({ message: 'Unauthorized' });
+		}
+
+		reply.code(500).send({ message: 'Error retrieving events' });
+		logger.error(error, 'Error handling getEventsController');
+	}
+}
+
+export async function getOtherUsersEventsController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const token = request.headers.authorization?.split(' ')[1]; // Bearer TOKEN
+		const decoded = decodeToken(token);
+		const userId = decoded?.userId;
+		if (!userId) {
+			return reply.code(401).send({ message: 'Unauthorized' });
+		}
+
+		const events = await getOtherUsersEventsService(userId);
 		reply.code(200).send(events);
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {

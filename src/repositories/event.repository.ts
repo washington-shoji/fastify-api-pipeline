@@ -121,6 +121,21 @@ export async function getUserEvents(userId: string) {
 	}
 }
 
+export async function getOtherUsersEvents(userId: string) {
+	const userUuid = parseUUID(userId);
+	const query = `SELECT * FROM events WHERE user_id != $1`;
+	const client = await pool.connect();
+
+	try {
+		const result = await client.query(query, [userUuid]);
+		return result.rows;
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
+}
+
 export async function getEvents() {
 	const query = `SELECT * FROM events`;
 	const client = await pool.connect();

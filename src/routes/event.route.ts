@@ -6,16 +6,21 @@ import {
 	updateEventController,
 	deleteEventController,
 	getUserEventsController,
+	getOtherUsersEventsController,
 } from '../controllers/event.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
 export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.addHook('preHandler', authMiddleware);
+
 	// Create Event
 	fastify.post('/events', createEventController);
 
 	// Get All Events
 	fastify.get('/user-events', getUserEventsController);
+
+	// Get Other Users Event Except Logged in User
+	fastify.get('/others-events', getOtherUsersEventsController);
 
 	// Get All Events
 	fastify.get('/events', getEventsController);

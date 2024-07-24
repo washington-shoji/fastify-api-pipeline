@@ -4,6 +4,7 @@ import {
 	deleteEvent,
 	findEventById,
 	getEvents,
+	getOtherUsersEvents,
 	getUserEvents,
 	updateEvent,
 } from '../repositories/event.repository';
@@ -44,6 +45,20 @@ export async function getUserEventsService(userId: string) {
 	try {
 		// Additional processing or business logic can go here
 		return await getUserEvents(userId);
+	} catch (error) {
+		// Log the error for debugging purposes
+		logger.error(error, 'Error could not find events');
+
+		// Here, you can decide how to handle the error.
+		// For example, you can throw a custom error with a more user-friendly message:
+		throw new Error('Failed to find events. Please try again later.');
+	}
+}
+
+export async function getOtherUsersEventsService(userId: string) {
+	try {
+		// Additional processing or business logic can go here
+		return await getOtherUsersEvents(userId);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find events');
