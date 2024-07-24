@@ -6,6 +6,7 @@ import {
 import {
 	createEventAddress,
 	deleteEventAddress,
+	findEventAddressByEventId,
 	findEventAddressById,
 	getEventsAddresses,
 	updateEventAddress,
@@ -39,6 +40,19 @@ export async function findEventAddressByIdService(
 ): Promise<EventAddressModelResponse> {
 	try {
 		const result: EventAddressModel = await findEventAddressById(id, eventId);
+
+		return responseDataTransformer(result);
+	} catch (error) {
+		logger.error(error, 'Error finding event address');
+		throw new Error('Failed to find event address. Please try again later.');
+	}
+}
+
+export async function findEventAddressByEventIdService(
+	eventId: string
+): Promise<EventAddressModelResponse> {
+	try {
+		const result: EventAddressModel = await findEventAddressByEventId(eventId);
 
 		return responseDataTransformer(result);
 	} catch (error) {
@@ -100,12 +114,12 @@ function responseDataTransformer(
 	input: EventAddressModel
 ): EventAddressModelResponse {
 	return <EventAddressModelResponse>{
-		id: input.id,
-		street: input.street,
-		city_suburb: input.city_suburb,
-		state: input.state,
-		country: input.country,
-		postal_code: input.postal_code,
+		id: input?.id ?? null,
+		street: input?.street ?? null,
+		city_suburb: input?.city_suburb ?? null,
+		state: input?.state ?? null,
+		country: input?.country ?? null,
+		postal_code: input?.postal_code ?? null,
 	};
 }
 

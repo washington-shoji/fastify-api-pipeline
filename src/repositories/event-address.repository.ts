@@ -68,6 +68,15 @@ export async function findEventAddressById(
 	return result.rows[0];
 }
 
+export async function findEventAddressByEventId(
+	eventId: string
+): Promise<EventAddressModel> {
+	const eventUuid = parseUUID(eventId);
+	const query = `SELECT * FROM event_addresses WHERE event_id = $1`;
+	const result = await pool.query(query, [eventUuid]);
+	return result.rows[0];
+}
+
 export async function getEventsAddresses(
 	eventId: string
 ): Promise<EventAddressModel[]> {

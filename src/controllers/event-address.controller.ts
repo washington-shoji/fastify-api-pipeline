@@ -4,6 +4,7 @@ import { EventAddressModelRequest } from '../models/event-address-model';
 import {
 	createEventAddressService,
 	deleteEventAddressService,
+	findEventAddressByEventIdService,
 	findEventAddressByIdService,
 	findEventAddressesService,
 	updateEventAddressService,
@@ -44,6 +45,27 @@ export async function findEventAddressByIdController(
 		const id = request.params.id;
 		const eventId = request.params.eventId;
 		const event = await findEventAddressByIdService(id, eventId);
+		if (!event) {
+			return reply.code(404).send({ message: 'Event address not found' });
+		}
+		reply.code(200).send(event);
+	} catch (error) {
+		reply.code(500).send({ message: 'Error retrieving event address' });
+		logger.error(error, 'Error handling findEventAddressByIdController');
+	}
+}
+
+export async function findEventAddressByEventIdController(
+	request: FastifyRequest<{
+		Params: {
+			eventId: string;
+		};
+	}>,
+	reply: FastifyReply
+) {
+	try {
+		const eventId = request.params.eventId;
+		const event = await findEventAddressByEventIdService(eventId);
 		if (!event) {
 			return reply.code(404).send({ message: 'Event address not found' });
 		}
