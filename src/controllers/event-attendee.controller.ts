@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { EventAttendeeModelRequest } from '../models/event-atendeed.model';
+import { EventAttendeeModelRequest } from '../models/event-attendee.model';
 import logger from '../utils/logger.utils';
 import {
 	createEventAttendeeService,
@@ -7,7 +7,7 @@ import {
 	findEventAttendeeByIdService,
 	findEventAttendeesService,
 	updateEventAttendeesService,
-} from '../services/event-attendees.service';
+} from '../services/event-attendee.service';
 import { getUserIdFromToken } from '../utils/get-api-user-id.utils';
 
 export async function createEventAttendeeController(

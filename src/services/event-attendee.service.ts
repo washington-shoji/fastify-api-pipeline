@@ -2,7 +2,7 @@ import {
 	EventAttendeeModel,
 	EventAttendeeModelRequest,
 	EventAttendeeModelResponse,
-} from '../models/event-atendeed.model';
+} from '../models/event-attendee.model';
 import {
 	createEventAttendee,
 	deleteEventAttendee,

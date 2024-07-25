@@ -1,6 +1,6 @@
 import pool from '../database/db';
 import { generateUUIDv7, parseUUID } from '../utils/uuidgenerator.utils';
-import { EventAttendeeModel } from './../models/event-atendeed.model';
+import { EventAttendeeModel } from '../models/event-attendee.model';
 
 export async function createEventAttendee(
 	attendeeData: EventAttendeeModel
