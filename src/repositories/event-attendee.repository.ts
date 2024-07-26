@@ -45,33 +45,29 @@ export async function updateEventAttendee(
 }
 
 export async function deleteEventAttendee(
-	id: string,
 	eventId: string,
 	userId: string
 ): Promise<void> {
-	const uuid = parseUUID(id as string);
 	const eventUuid = parseUUID(eventId);
 	const userUuid = parseUUID(userId);
 
 	const query = `DELETE FROM event_attendees 
-    WHERE id = $1 AND event_id = $2 AND user_id = $3 
+    WHERE event_id = $1 AND user_id = $2 
     RETURNING *`;
-	const result = await pool.query(query, [uuid, eventUuid, userUuid]);
+	const result = await pool.query(query, [eventUuid, userUuid]);
 	return result.rows[0];
 }
 
-export async function findEventAttendeeById(
-	id: string,
+export async function findEventAttendeeByUserIdAndEventId(
 	eventId: string,
 	userId: string
 ): Promise<EventAttendeeModel> {
-	const uuid = parseUUID(id as string);
 	const eventUuid = parseUUID(eventId);
 	const userUuid = parseUUID(userId);
 
 	const query = `SELECT * FROM event_attendees 
-    WHERE id = $1 AND event_id = $2 AND user_id = $3`;
-	const result = await pool.query(query, [uuid, eventUuid, userUuid]);
+    WHERE event_id = $1 AND user_id = $2`;
+	const result = await pool.query(query, [eventUuid, userUuid]);
 	return result.rows[0];
 }
 

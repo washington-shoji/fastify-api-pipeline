@@ -6,7 +6,7 @@ import {
 import {
 	createEventAttendee,
 	deleteEventAttendee,
-	findEventAttendeeById,
+	findEventAttendeeByUserIdAndEventId,
 	getEventAttendees,
 	updateEventAttendee,
 } from '../repositories/event-attendee.repository';
@@ -37,16 +37,12 @@ export async function createEventAttendeeService(
 }
 
 export async function findEventAttendeeByIdService(
-	id: string,
 	eventId: string,
 	userId: string
 ): Promise<EventAttendeeModelResponse> {
 	try {
-		const result: EventAttendeeModel = await findEventAttendeeById(
-			id,
-			eventId,
-			userId
-		);
+		const result: EventAttendeeModel =
+			await findEventAttendeeByUserIdAndEventId(eventId, userId);
 		return responseDataTransformer(result);
 	} catch (error) {
 		logger.error(error, 'Error finding event attendee');
@@ -67,15 +63,19 @@ export async function findEventAttendeesService(
 }
 
 export async function updateEventAttendeesService(
-	id: string,
 	eventId: string,
 	userId: string,
 	attendeeData: EventAttendeeModelRequest
 ): Promise<EventAttendeeModelResponse> {
 	try {
+		const eventAttendee = await findEventAttendeeByUserIdAndEventId(
+			eventId,
+			userId
+		);
+
 		const eventAttendeeEntity: EventAttendeeModel = {
 			...attendeeData,
-			id: id,
+			id: eventAttendee.id,
 			eventId: eventId,
 			userId: userId,
 			attendee_name: attendeeData.attendeeName,
@@ -93,12 +93,11 @@ export async function updateEventAttendeesService(
 }
 
 export async function deleteEventAttendeeService(
-	id: string,
 	eventId: string,
 	userId: string
 ): Promise<string> {
 	try {
-		await deleteEventAttendee(id, eventId, userId);
+		await deleteEventAttendee(eventId, userId);
 		return 'Deleted successfully';
 	} catch (error) {
 		logger.error(error, 'Error deleting event attendees');

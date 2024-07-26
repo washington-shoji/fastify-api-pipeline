@@ -39,17 +39,15 @@ export async function createEventAttendeeController(
 	}
 }
 
-export async function findEventAttendeeByIdController(
+export async function findEventAttendeeByEventIdController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
 			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const id = request.params.id;
 		const eventId = request.params.eventId;
 		const userId = getUserIdFromToken(request);
 
@@ -57,11 +55,7 @@ export async function findEventAttendeeByIdController(
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
 
-		const eventAttendee = await findEventAttendeeByIdService(
-			id,
-			eventId,
-			userId
-		);
+		const eventAttendee = await findEventAttendeeByIdService(eventId, userId);
 		reply.code(200).send(eventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event attendee' });
@@ -91,7 +85,6 @@ export async function getEventAttendeesController(
 export async function updateEventAttendeeController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
 			eventId: string;
 		};
 		Body: EventAttendeeModelRequest;
@@ -99,7 +92,6 @@ export async function updateEventAttendeeController(
 	reply: FastifyReply
 ) {
 	try {
-		const id = request.params.id;
 		const eventId = request.params.eventId;
 		const userId = getUserIdFromToken(request);
 
@@ -108,7 +100,6 @@ export async function updateEventAttendeeController(
 		}
 
 		const updatedEventAttendee = await updateEventAttendeesService(
-			id,
 			eventId,
 			userId,
 			request.body
@@ -123,14 +114,12 @@ export async function updateEventAttendeeController(
 export async function deleteEventAttendeeController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
 			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
 ) {
 	try {
-		const id = request.params.id;
 		const eventId = request.params.eventId;
 		const userId = getUserIdFromToken(request);
 
@@ -138,7 +127,7 @@ export async function deleteEventAttendeeController(
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
 
-		const eventAttendee = await deleteEventAttendeeService(id, eventId, userId);
+		const eventAttendee = await deleteEventAttendeeService(eventId, userId);
 		reply.code(200).send(eventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error deleting event attendee' });
