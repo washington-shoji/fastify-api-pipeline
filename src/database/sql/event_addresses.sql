@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS event_addresses (
-    id UUID PRIMARY KEY,
-    event_id UUID UNIQUE REFERENCES events(id) ON DELETE CASCADE,
+    address_id UUID PRIMARY KEY,
+    event_id UUID UNIQUE REFERENCES events(event_id) ON DELETE CASCADE,
     street VARCHAR(255),
     city_suburb VARCHAR(100),
     state VARCHAR(50),

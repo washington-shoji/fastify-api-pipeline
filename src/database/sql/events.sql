@@ -1,11 +1,12 @@
 CREATE TABLE IF NOT EXISTS events (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    event_id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
-    description TEXT,
-    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    location VARCHAR(500) NOT NULL,
+    description VARCHAR(800),
+    registration_open TIMESTAMP WITH TIME ZONE NOT NULL,
+    registration_close TIMESTAMP WITH TIME ZONE NOT NULL,
+    event_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    location_type VARCHAR(500) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE
 );
