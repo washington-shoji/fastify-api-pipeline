@@ -7,6 +7,7 @@ import {
 } from '../../../services/event.service';
 import logger from '../../../utils/logger.utils';
 import * as eventRepo from '../../../repositories/event.repository';
+import { LOCATION_TYPE } from '../../../models/event-model';
 
 jest.mock('../../../repositories/event.repository');
 jest.mock('../../../utils/logger.utils', () => ({
@@ -15,14 +16,24 @@ jest.mock('../../../utils/logger.utils', () => ({
 
 describe('Event Service', () => {
 	const userId = 'mock-userUuid-1';
-	const mockEvent = {
-		id: 'mock-uuid',
-		userId: 'mock-userUuid-1',
+	const mockRequestEvent = {
+		event_id: 'mock-uuid',
 		title: 'Test Event',
 		description: 'Test description',
-		start_time: new Date(),
-		end_time: new Date(),
-		location: 'Test Locaton',
+		registration_open: new Date(),
+		registration_close: new Date(),
+		event_date: new Date(),
+		location_type: <LOCATION_TYPE>'VENUE',
+	};
+	const mockEventEntity = {
+		event_id: 'mock-uuid',
+		user_id: 'mock-userUuid-1',
+		title: 'Test Event',
+		description: 'Test description',
+		registration_open: new Date(),
+		registration_close: new Date(),
+		event_date: new Date(),
+		location_type: <LOCATION_TYPE>'VENUE',
 	};
 
 	afterEach(() => {
@@ -31,19 +42,19 @@ describe('Event Service', () => {
 
 	describe('createEventService', () => {
 		it('should create an event successfully', async () => {
-			(eventRepo.createEvent as jest.Mock).mockResolvedValue(mockEvent);
+			(eventRepo.createEvent as jest.Mock).mockResolvedValue(mockEventEntity);
 
-			const result = await createEventService(userId, mockEvent);
+			const result = await createEventService(userId, mockRequestEvent);
 
-			expect(result).toEqual(mockEvent);
-			expect(eventRepo.createEvent).toHaveBeenCalledWith(userId, mockEvent);
+			expect(result).toEqual(mockRequestEvent);
+			expect(eventRepo.createEvent).toHaveBeenCalledWith(mockEventEntity);
 		});
 
 		it('should log an error and throw a custom error when creation fails', async () => {
 			const error = new Error('Failed to create event');
 			(eventRepo.createEvent as jest.Mock).mockRejectedValue(error);
 
-			await expect(createEventService(userId, mockEvent)).rejects.toThrow(
+			await expect(createEventService(userId, mockEventEntity)).rejects.toThrow(
 				'Failed to create event. Please try again later.'
 			);
 
@@ -53,14 +64,24 @@ describe('Event Service', () => {
 
 	describe('findEventByIdService', () => {
 		const eventId = 'mock-uuid';
-		const mockEvent = { id: eventId, title: 'Sample Event' }; // Add other necessary properties
+		const mockResponseEvent = {
+			event_id: eventId,
+			title: 'Test Event',
+			description: 'Test description',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
+		}; // Add other necessary properties
 
 		it('should find an event by ID successfully', async () => {
-			(eventRepo.findEventById as jest.Mock).mockResolvedValue(mockEvent);
+			(eventRepo.findEventById as jest.Mock).mockResolvedValue(
+				mockResponseEvent
+			);
 
 			const result = await findEventByIdService(eventId, userId);
 
-			expect(result).toEqual(mockEvent);
+			expect(result).toEqual(mockResponseEvent);
 			expect(eventRepo.findEventById).toHaveBeenCalledWith(eventId, userId);
 		});
 
@@ -80,32 +101,33 @@ describe('Event Service', () => {
 	});
 
 	describe('getEventsService', () => {
-		const userId = 'mock-userUuid-1';
-		const mockEvents = [
+		const mockResponseEvents = [
 			{
-				id: 'mock-uuid-1',
-				userId: userId,
+				event_id: 'mock-uuid-1',
 				title: 'Event 1',
-				start_time: new Date(),
-				end_time: new Date(),
-				location: 'Test Locaton',
+				description: 'Test description',
+				registration_open: new Date(),
+				registration_close: new Date(),
+				event_date: new Date(),
+				location_type: <LOCATION_TYPE>'VENUE',
 			},
 			{
-				id: 'mock-uuid-2',
-				userId: userId,
+				event_id: 'mock-uuid-2',
 				title: 'Event 2',
-				start_time: new Date(),
-				end_time: new Date(),
-				location: 'Test Locaton',
+				description: 'Test description',
+				registration_open: new Date(),
+				registration_close: new Date(),
+				event_date: new Date(),
+				location_type: <LOCATION_TYPE>'VENUE',
 			},
 		]; // Add other properties as needed
 
 		it('should retrieve all events successfully', async () => {
-			(eventRepo.getEvents as jest.Mock).mockResolvedValue(mockEvents);
+			(eventRepo.getEvents as jest.Mock).mockResolvedValue(mockResponseEvents);
 
 			const result = await getEventsService();
 
-			expect(result).toEqual(mockEvents);
+			expect(result).toEqual(mockResponseEvents);
 			expect(eventRepo.getEvents).toHaveBeenCalled();
 		});
 
@@ -126,27 +148,35 @@ describe('Event Service', () => {
 
 	describe('updateEventService', () => {
 		const eventId = 'mock-uuid';
-		const mockEventData = {
-			userId: userId,
-			title: 'Updated Event',
-			description: 'Test description',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Test Locaton',
+		const mockEventResponseData = {
+			event_id: eventId,
+			title: 'Updated Event Title',
+			description: 'Event description',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'VENUE',
 		}; // Add other necessary properties
-		const updatedEvent = { id: eventId, ...mockEventData };
+		const mockEventData = {
+			event_id: eventId,
+			user_id: 'mock-userUuid-1',
+			title: 'Event Title',
+			description: 'Event description',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'VENUE',
+		}; // Add other necessary properties
 
 		it('should update an event successfully', async () => {
-			(eventRepo.updateEvent as jest.Mock).mockResolvedValue(updatedEvent);
+			(eventRepo.updateEvent as jest.Mock).mockResolvedValue(
+				mockEventResponseData
+			);
 
 			const result = await updateEventService(eventId, userId, mockEventData);
 
-			expect(result).toEqual(updatedEvent);
-			expect(eventRepo.updateEvent).toHaveBeenCalledWith(
-				eventId,
-				userId,
-				mockEventData
-			);
+			expect(result).toEqual(mockEventResponseData);
+			expect(eventRepo.updateEvent).toHaveBeenCalledWith(mockEventData);
 		});
 
 		it('should log an error and throw a custom error when update fails', async () => {

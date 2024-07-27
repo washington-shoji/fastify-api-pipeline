@@ -1,5 +1,10 @@
 import fastify, { FastifyInstance } from 'fastify';
-import { EventModel } from '../../../models/event-model';
+import {
+	EventEntityModel,
+	EventRequestModel,
+	EventResponseModel,
+	LOCATION_TYPE,
+} from '../../../models/event-model';
 import {
 	createEventController,
 	deleteEventController,
@@ -27,7 +32,7 @@ describe('Event Controllers - createEventController', () => {
 	beforeEach(async () => {
 		app = fastify();
 		app.addHook('preHandler', authMiddleware);
-		app.post<{ Body: EventModel }>('/events', createEventController);
+		app.post<{ Body: EventRequestModel }>('/events', createEventController);
 
 		const result = await registerUserService(
 			`${Math.random().toString()}`,
@@ -35,7 +40,7 @@ describe('Event Controllers - createEventController', () => {
 			'test-pass-disabled'
 		);
 
-		userId = result.id;
+		userId = result.user_id;
 		token = testToken(userId);
 	});
 
@@ -47,13 +52,13 @@ describe('Event Controllers - createEventController', () => {
 	});
 
 	it('should create an event and return 201 status', async () => {
-		const testEventData: EventModel = {
-			userId: userId,
+		const testRequestEventData: EventRequestModel = {
 			title: 'TEST Event',
 			description: 'Test Description',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Test Location',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
 		};
 
 		const response = await app.inject({
@@ -62,13 +67,25 @@ describe('Event Controllers - createEventController', () => {
 			headers: {
 				authorization: `Bearer ${token}`,
 			},
-			payload: testEventData,
+			payload: testRequestEventData,
 		});
 
 		expect(response.statusCode).toBe(201);
 		const createdEvent = JSON.parse(response.body);
-		createdEventId = createdEvent.id;
+		createdEventId = createdEvent.event_id;
 		// Further assertions can be made on the response body if necessary
+
+		const testResponseEventData: EventResponseModel = {
+			event_id: createdEventId,
+			title: 'TEST Event',
+			description: 'Test Description',
+			registration_open: createdEvent.registration_open,
+			registration_close: createdEvent.registration_close,
+			event_date: createdEvent.event_date,
+			location_type: <LOCATION_TYPE>'ONLINE',
+		};
+
+		expect(createdEvent).toStrictEqual(testResponseEventData);
 	});
 
 	// Additional test to simulate a failure scenario
@@ -88,15 +105,15 @@ describe('Event Controllers - createEventController', () => {
 
 describe('Event Controllers - updateEventController', () => {
 	let app: FastifyInstance;
-	let testEvent: EventModel;
+	let testEvent: EventResponseModel;
 	let userId: string;
 	let token: string;
 
 	beforeEach(async () => {
 		app = fastify();
 		app.addHook('preHandler', authMiddleware);
-		app.put<{ Params: { id: string }; Body: EventModel }>(
-			'/events/:id',
+		app.put<{ Params: { eventId: string }; Body: EventRequestModel }>(
+			'/events/:eventId',
 			updateEventController
 		);
 
@@ -106,16 +123,17 @@ describe('Event Controllers - updateEventController', () => {
 			'test-pass-disabled'
 		);
 
-		userId = result.id;
+		userId = result.user_id;
 		token = testToken(userId);
 
 		const eventData = {
-			userId: userId,
+			user_id: userId,
 			title: 'TEST Event to Update',
 			description: 'This event will be updated in the test',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Test Location',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
 		};
 
 		// Create a test event to fetch later
@@ -124,24 +142,25 @@ describe('Event Controllers - updateEventController', () => {
 
 	afterEach(async () => {
 		// Teardown: Delete all created/updated events to clean up the database
-		await deleteEventService(testEvent.id as string, userId);
+		await deleteEventService(testEvent.event_id, userId);
 		await testDeleteUserService(userId);
 		await app.close();
 	});
 
 	it('should update an event and return the updated event', async () => {
-		const updateEventData: EventModel = {
-			userId: userId,
+		const updateEventData: EventEntityModel = {
+			user_id: userId,
 			title: 'TEST Updated Event',
 			description: testEvent.description,
-			start_time: testEvent.start_time,
-			end_time: testEvent.end_time,
-			location: 'Updated Location',
+			registration_open: testEvent.registration_open,
+			registration_close: testEvent.registration_close,
+			event_date: testEvent.event_date,
+			location_type: <LOCATION_TYPE>'ONLINE',
 		};
 
 		const response = await app.inject({
 			method: 'PUT',
-			url: `/events/${testEvent.id}`,
+			url: `/events/${testEvent.event_id}`,
 			headers: {
 				authorization: `Bearer ${token}`,
 			},
@@ -152,7 +171,7 @@ describe('Event Controllers - updateEventController', () => {
 		const updatedEvent = JSON.parse(response.body);
 		expect(updatedEvent.title).toBe(updateEventData.title);
 		expect(updatedEvent.description).toBe(updateEventData.description);
-		expect(updatedEvent.location).toBe(updateEventData.location);
+		expect(updatedEvent.location_type).toBe(updateEventData.location_type);
 		// Further assertions as needed
 	});
 
@@ -178,13 +197,13 @@ describe('Event Controllers - deleteEventController', () => {
 	let app: FastifyInstance;
 	let userId: string;
 	let token: string;
-	let testEvent: EventModel;
+	let testEvent: EventResponseModel;
 
 	beforeEach(async () => {
 		app = fastify();
 		app.addHook('preHandler', authMiddleware);
-		app.delete<{ Params: { id: string } }>(
-			'/events/:id',
+		app.delete<{ Params: { eventId: string } }>(
+			'/events/:eventId',
 			deleteEventController
 		);
 
@@ -194,15 +213,17 @@ describe('Event Controllers - deleteEventController', () => {
 			'test-pass-disabled'
 		);
 
-		userId = result.id;
+		userId = result.user_id;
 		token = testToken(userId);
 
 		const eventData = {
+			user_id: userId,
 			title: 'TEST Event to Delete',
 			description: 'This event will be deleted in the tests',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Test Location',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
 		};
 		// Create an event to delete later
 		testEvent = await createEventService(userId, eventData);
@@ -210,7 +231,7 @@ describe('Event Controllers - deleteEventController', () => {
 
 	afterEach(async () => {
 		// Teardown: Delete all created/updated events to clean up the database
-		await deleteEventService(testEvent.id as string, userId);
+		await deleteEventService(testEvent.event_id, userId);
 		await testDeleteUserService(userId);
 		await app.close();
 	});
@@ -218,7 +239,7 @@ describe('Event Controllers - deleteEventController', () => {
 	it('should delete an event and return 204 status', async () => {
 		const response = await app.inject({
 			method: 'DELETE',
-			url: `/events/${testEvent.id}`,
+			url: `/events/${testEvent.event_id}`,
 			headers: {
 				authorization: `Bearer ${token}`,
 			},
@@ -229,7 +250,7 @@ describe('Event Controllers - deleteEventController', () => {
 		// Optionally, verify that the event no longer exists in the database
 		const verifyResponse = await app.inject({
 			method: 'GET',
-			url: `/events/${testEvent.id}`,
+			url: `/events/${testEvent.event_id}`,
 			headers: {
 				authorization: `Bearer ${token}`,
 			},
@@ -256,12 +277,15 @@ describe('Event Controllers - findEventByIdController', () => {
 	let app: FastifyInstance;
 	let userId: string;
 	let token: string;
-	let testEvent: EventModel;
+	let testEvent: EventResponseModel;
 
 	beforeEach(async () => {
 		app = fastify();
 		app.addHook('preHandler', authMiddleware);
-		app.get<{ Params: { id: string } }>('/events/:id', findEventByIdController);
+		app.get<{ Params: { eventId: string } }>(
+			'/events/:eventId',
+			findEventByIdController
+		);
 
 		const result = await registerUserService(
 			`${Math.random().toString()}`,
@@ -269,23 +293,24 @@ describe('Event Controllers - findEventByIdController', () => {
 			'test-pass-disabled'
 		);
 
-		userId = result.id;
+		userId = result.user_id;
 		token = testToken(userId);
 		// Create a test event to fetch later
 		const eventData = {
-			userId: userId,
+			user_id: userId,
 			title: 'TEST Event to Find',
 			description: 'This event will be fetched in the tests',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Test Location',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
 		};
 		testEvent = await createEventService(userId, eventData);
 	});
 
 	afterEach(async () => {
 		// Clean up: Delete the test event
-		await deleteEventService(testEvent.id as string, userId);
+		await deleteEventService(testEvent.event_id, userId);
 		await testDeleteUserService(userId);
 		await app.close();
 	});
@@ -293,7 +318,7 @@ describe('Event Controllers - findEventByIdController', () => {
 	it('should return the event for an existing event ID', async () => {
 		const response = await app.inject({
 			method: 'GET',
-			url: `/events/${testEvent.id}`,
+			url: `/events/${testEvent.event_id}`,
 			headers: {
 				authorization: `Bearer ${token}`,
 			},
@@ -301,7 +326,7 @@ describe('Event Controllers - findEventByIdController', () => {
 
 		expect(response.statusCode).toBe(200);
 		const responseBody = JSON.parse(response.body);
-		expect(responseBody.id).toBe(testEvent.id);
+		expect(responseBody.event_id).toBe(testEvent.event_id);
 		expect(responseBody.title).toBe(testEvent.title);
 		// Further assertions as needed based on the event structure
 	});
@@ -326,8 +351,8 @@ describe('Event Controllers - getEventsController', () => {
 	let app: FastifyInstance;
 	let userId: string;
 	let token: string;
-	let testEvent1: EventModel;
-	let testEvent2: EventModel;
+	let testEvent1: EventResponseModel;
+	let testEvent2: EventResponseModel;
 
 	beforeEach(async () => {
 		app = fastify();
@@ -340,30 +365,32 @@ describe('Event Controllers - getEventsController', () => {
 			'test-pass-disabled'
 		);
 
-		userId = result.id;
+		userId = result.user_id;
 		token = testToken(userId);
 		// Create a couple of test events to be fetched later
 		testEvent1 = await createEventService(userId, {
 			title: 'TEST Delete Event 1',
 			description: 'Description 1',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Location 1',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'VENUE',
 		});
 
 		testEvent2 = await createEventService(userId, {
 			title: 'TEST Delete Event 2',
 			description: 'Description 2',
-			start_time: new Date(),
-			end_time: new Date(),
-			location: 'Location 2',
+			registration_open: new Date(),
+			registration_close: new Date(),
+			event_date: new Date(),
+			location_type: <LOCATION_TYPE>'ONLINE',
 		});
 	});
 
 	afterEach(async () => {
 		// Clean up: Delete all created events
-		await deleteEventService(testEvent1.id as string, userId);
-		await deleteEventService(testEvent2.id as string, userId);
+		await deleteEventService(testEvent1.event_id, userId);
+		await deleteEventService(testEvent2.event_id, userId);
 		await testDeleteUserService(userId);
 		await app.close();
 	});

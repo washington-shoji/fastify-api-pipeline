@@ -1,4 +1,5 @@
 import pool from '../../../database/db';
+import { LOCATION_TYPE } from '../../../models/event-model';
 import {
 	createEvent,
 	deleteEvent,
@@ -21,12 +22,17 @@ jest.mock('../../../utils/uuidgenerator.utils', () => ({
 }));
 
 describe('createEvent', () => {
+	const eventId = 'mock-uuid';
+	const userId = 'mock-userUuid-1';
 	const eventData = {
+		event_id: eventId,
+		user_id: userId,
 		title: 'Test Event',
-		description: 'This is a test event',
-		start_time: new Date(),
-		end_time: new Date(),
-		location: 'Test Location',
+		description: 'Test description',
+		registration_open: new Date(),
+		registration_close: new Date(),
+		event_date: new Date(),
+		location_type: <LOCATION_TYPE>'ONLINE',
 	};
 
 	beforeEach(() => {
@@ -34,7 +40,7 @@ describe('createEvent', () => {
 		pool.connect = jest.fn().mockResolvedValue({
 			query: jest
 				.fn()
-				.mockResolvedValue({ rows: [{ ...eventData, id: 'mock-uuid' }] }),
+				.mockResolvedValue({ rows: [{ ...eventData, event_id: 'mock-uuid' }] }),
 			release: jest.fn(),
 		});
 	});
@@ -45,9 +51,9 @@ describe('createEvent', () => {
 
 	it('should create an event and return the created event object', async () => {
 		const userId = 'mock-userUuid';
-		const result = await createEvent(userId, eventData);
+		const result = await createEvent(eventData);
 
-		expect(result).toEqual({ ...eventData, id: 'mock-uuid' });
+		expect(result).toEqual({ ...eventData, event_id: 'mock-uuid' });
 		expect(pool.connect).toHaveBeenCalled();
 		expect(generateUUIDv7).toHaveBeenCalled();
 	});
@@ -59,9 +65,7 @@ describe('createEvent', () => {
 		});
 
 		const userId = 'mock-userUuid';
-		await expect(createEvent(userId, eventData)).rejects.toThrow(
-			'Database error'
-		);
+		await expect(createEvent(eventData)).rejects.toThrow('Database error');
 		expect(pool.connect).toHaveBeenCalled();
 	});
 
@@ -76,9 +80,7 @@ describe('createEvent', () => {
 		});
 
 		const userId = 'mock-userUuid';
-		await expect(createEvent(userId, eventData)).rejects.toThrow(
-			'Insert error'
-		);
+		await expect(createEvent(eventData)).rejects.toThrow('Insert error');
 		// No need to check mockBegin since it's part of the mocked implementation
 		expect(pool.connect).toHaveBeenCalled();
 	});
@@ -91,15 +93,15 @@ describe('createEvent', () => {
 				.fn()
 				.mockImplementationOnce(() => Promise.resolve()) // Simulate BEGIN
 				.mockImplementationOnce(() =>
-					Promise.resolve({ rows: [{ ...eventData, id: 'mock-uuid' }] })
+					Promise.resolve({ rows: [{ ...eventData, event_id: 'mock-uuid' }] })
 				) // Simulate successful INSERT
 				.mockImplementationOnce(mockCommit), // Simulate COMMIT
 			release: mockRelease,
 		});
 
 		const userId = 'mock-userUuid';
-		const result = await createEvent(userId, eventData);
-		expect(result).toEqual({ ...eventData, id: 'mock-uuid' });
+		const result = await createEvent(eventData);
+		expect(result).toEqual({ ...eventData, event_id: 'mock-uuid' });
 		expect(mockCommit).toHaveBeenCalledTimes(1);
 		expect(mockRelease).toHaveBeenCalledTimes(1);
 	});
@@ -108,7 +110,7 @@ describe('createEvent', () => {
 describe('deleteEvent', () => {
 	const eventId = 'mock-uuid';
 	const deletedEventData = {
-		id: eventId,
+		event_id: eventId,
 		title: 'Test Event',
 		description: 'This is a test event',
 		start_time: new Date(),
@@ -196,7 +198,7 @@ describe('deleteEvent', () => {
 describe('findEventByIdService', () => {
 	const eventId = '018dd8dc-b226-7a30-af70-c2ea0f0d8346';
 	const foundEvent = {
-		id: eventId,
+		event_id: eventId,
 		title: 'Test Event',
 		description: 'This is a test event',
 		start_time: new Date(),
@@ -246,7 +248,7 @@ describe('findEventByIdService', () => {
 describe('getEventsService', () => {
 	const eventsList = [
 		{
-			id: '1',
+			event_id: '1',
 			title: 'Event 1',
 			description: 'Description 1',
 			start_time: new Date(),
@@ -254,7 +256,7 @@ describe('getEventsService', () => {
 			location: 'Location 1',
 		},
 		{
-			id: '2',
+			event_id: '2',
 			title: 'Event 2',
 			description: 'Description 2',
 			start_time: new Date(),
@@ -301,14 +303,15 @@ describe('getEventsService', () => {
 describe('updateEventService', () => {
 	const eventId = 'mock-uuid';
 	const updateData = {
-		userId: 'mock-userUuid',
+		event_id: eventId,
+		user_id: 'mock-userUuid',
 		title: 'Updated Event',
 		description: 'Updated description',
-		start_time: new Date(),
-		end_time: new Date(),
-		location: 'Updated Location',
+		registration_open: new Date(),
+		registration_close: new Date(),
+		event_date: new Date(),
+		location_type: <LOCATION_TYPE>'VENUE',
 	};
-	const updatedEvent = { id: eventId, ...updateData };
 
 	beforeEach(() => {
 		(parseUUID as jest.Mock).mockReturnValue(eventId);
@@ -316,7 +319,7 @@ describe('updateEventService', () => {
 			query: jest
 				.fn()
 				.mockResolvedValueOnce({}) // Simulate BEGIN
-				.mockResolvedValueOnce({ rows: [updatedEvent], rowCount: 1 }) // Simulate successful UPDATE
+				.mockResolvedValueOnce({ rows: [updateData], rowCount: 1 }) // Simulate successful UPDATE
 				.mockResolvedValueOnce({}), // Simulate COMMIT
 			release: jest.fn(),
 		});
@@ -328,9 +331,9 @@ describe('updateEventService', () => {
 
 	it('should update an event successfully', async () => {
 		const userId = 'mock-userUuid';
-		const result = await updateEvent(eventId, userId, updateData);
+		const result = await updateEvent(updateData);
 
-		expect(result).toEqual(updatedEvent);
+		expect(result).toEqual(updateData);
 		expect(pool.connect).toHaveBeenCalled();
 		expect(parseUUID).toHaveBeenCalledWith(eventId);
 	});
@@ -350,7 +353,7 @@ describe('updateEventService', () => {
 		});
 
 		const userId = 'mock-userUuid';
-		await expect(updateEvent(eventId, userId, updateData)).rejects.toThrow(
+		await expect(updateEvent(updateData)).rejects.toThrow(
 			'Failed to update event. Please try again later.'
 		);
 		expect(pool.connect).toHaveBeenCalled();
@@ -364,15 +367,15 @@ describe('updateEventService', () => {
 				.fn()
 				.mockImplementationOnce(() => Promise.resolve()) // Simulate BEGIN
 				.mockImplementationOnce(() =>
-					Promise.resolve({ rows: [updatedEvent], rowCount: 1 })
+					Promise.resolve({ rows: [updateData], rowCount: 1 })
 				) // Simulate successful UPDATE
 				.mockImplementationOnce(mockCommit), // Simulate COMMIT
 			release: mockRelease,
 		});
 
 		const userId = 'mock-userUuid';
-		const result = await updateEvent(eventId, userId, updateData);
-		expect(result).toEqual(updatedEvent); // Adjust based on your implementation
+		const result = await updateEvent(updateData);
+		expect(result).toEqual(updateData); // Adjust based on your implementation
 		expect(mockCommit).toHaveBeenCalledTimes(1);
 		expect(mockRelease).toHaveBeenCalledTimes(1);
 	});
