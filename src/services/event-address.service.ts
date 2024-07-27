@@ -1,5 +1,5 @@
 import {
-	EventAddressModel,
+	EventAddressEntityModel,
 	EventAddressModelRequest,
 	EventAddressModelResponse,
 } from '../models/event-address-model';
@@ -18,12 +18,12 @@ export async function createEventAddressService(
 	addressData: EventAddressModelRequest
 ): Promise<EventAddressModelResponse> {
 	try {
-		const eventAddressEntity: EventAddressModel = {
+		const eventAddressEntity: EventAddressEntityModel = {
 			...addressData,
-			eventId: eventId,
+			event_id: eventId,
 		};
 
-		const result: EventAddressModel = await createEventAddress(
+		const result: EventAddressEntityModel = await createEventAddress(
 			eventAddressEntity
 		);
 
@@ -39,7 +39,10 @@ export async function findEventAddressByIdService(
 	eventId: string
 ): Promise<EventAddressModelResponse> {
 	try {
-		const result: EventAddressModel = await findEventAddressById(id, eventId);
+		const result: EventAddressEntityModel = await findEventAddressById(
+			id,
+			eventId
+		);
 
 		return responseDataTransformer(result);
 	} catch (error) {
@@ -52,7 +55,9 @@ export async function findEventAddressByEventIdService(
 	eventId: string
 ): Promise<EventAddressModelResponse> {
 	try {
-		const result: EventAddressModel = await findEventAddressByEventId(eventId);
+		const result: EventAddressEntityModel = await findEventAddressByEventId(
+			eventId
+		);
 
 		return responseDataTransformer(result);
 	} catch (error) {
@@ -65,7 +70,7 @@ export async function findEventAddressesService(
 	eventId: string
 ): Promise<EventAddressModelResponse[]> {
 	try {
-		const result: EventAddressModel[] = await getEventsAddresses(eventId);
+		const result: EventAddressEntityModel[] = await getEventsAddresses(eventId);
 
 		return responseDataTransformerArray(result);
 	} catch (error) {
@@ -80,11 +85,11 @@ export async function updateEventAddressService(
 	addressData: EventAddressModelRequest
 ): Promise<EventAddressModelResponse> {
 	try {
-		const eventAddressEntity: EventAddressModel = {
+		const eventAddressEntity: EventAddressEntityModel = {
 			...addressData,
-			eventId: eventId,
+			event_id: eventId,
 		};
-		const result: EventAddressModel = await updateEventAddress(
+		const result: EventAddressEntityModel = await updateEventAddress(
 			id,
 			eventId,
 			eventAddressEntity
@@ -111,10 +116,10 @@ export async function deleteEventAddressService(
 }
 
 function responseDataTransformer(
-	input: EventAddressModel
+	input: EventAddressEntityModel
 ): EventAddressModelResponse {
 	return <EventAddressModelResponse>{
-		id: input?.id ?? null,
+		address_id: input?.address_id ?? null,
 		street: input?.street ?? null,
 		city_suburb: input?.city_suburb ?? null,
 		state: input?.state ?? null,
@@ -124,12 +129,12 @@ function responseDataTransformer(
 }
 
 function responseDataTransformerArray(
-	inputItems: EventAddressModel[]
+	inputItems: EventAddressEntityModel[]
 ): EventAddressModelResponse[] {
 	return inputItems.map(
 		(input) =>
 			<EventAddressModelResponse>{
-				id: input.id,
+				address_id: input.address_id,
 				street: input.street,
 				city_suburb: input.city_suburb,
 				state: input.state,

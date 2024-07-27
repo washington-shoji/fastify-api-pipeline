@@ -1,6 +1,6 @@
-export interface EventAddressModel {
-	id?: string;
-	eventId: string;
+export interface EventAddressEntityModel {
+	address_id?: string;
+	event_id: string;
 	street: string;
 	city_suburb: string;
 	state: string;
@@ -11,7 +11,7 @@ export interface EventAddressModel {
 }
 
 export interface EventAddressModelRequest {
-	id?: string;
+	address_id?: string;
 	street: string;
 	city_suburb: string;
 	state: string;
@@ -20,7 +20,7 @@ export interface EventAddressModelRequest {
 }
 
 export interface EventAddressModelResponse {
-	id: string;
+	address_id: string;
 	street: string;
 	city_suburb: string;
 	state: string;
