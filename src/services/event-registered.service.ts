@@ -27,16 +27,17 @@ function responseDataTransformer(
 ): RegisteredEventResponseModel {
 	return <RegisteredEventResponseModel>{
 		attendee: {
-			attendee_name: input?.attendee_name ?? null,
-			status: input?.status ?? null,
+			registration_name: input?.registration_name ?? null,
+			attendee_status: input?.attendee_status ?? null,
 		},
 		event: {
-			id: input?.id ?? null,
+			event_id: input?.event_id ?? null,
 			title: input?.title ?? null,
 			description: input?.description ?? null,
-			start_time: input?.start_time ?? null,
-			end_time: input?.end_time ?? null,
-			location: input?.location ?? null,
+			registration_open: input?.registration_open ?? null,
+			registration_close: input?.registration_close ?? null,
+			event_date: input?.event_date ?? null,
+			location_type: input?.location_type ?? null,
 		},
 		address: {
 			street: input?.street ?? null,
@@ -55,16 +56,17 @@ function responseDataTransformerArray(
 		(input) =>
 			<RegisteredEventResponseModel>{
 				attendee: {
-					attendee_name: input?.attendee_name ?? null,
-					status: input?.status ?? null,
+					registration_name: input?.registration_name ?? null,
+					attendee_status: input?.attendee_status ?? null,
 				},
 				event: {
-					id: input?.id ?? null,
+					event_id: input?.event_id ?? null,
 					title: input?.title ?? null,
 					description: input?.description ?? null,
-					start_time: input?.start_time ?? null,
-					end_time: input?.end_time ?? null,
-					location: input?.location ?? null,
+					registration_open: input?.registration_open ?? null,
+					registration_close: input?.registration_close ?? null,
+					event_date: input?.event_date ?? null,
+					location_type: input?.location_type ?? null,
 				},
 				address: {
 					street: input?.street ?? null,

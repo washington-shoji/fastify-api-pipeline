@@ -1,12 +1,16 @@
+import { ATTENDEE_STATUS } from './event-attendee.model';
+import { LOCATION_TYPE } from './event-model';
+
 export interface RegisteredEventModel {
-	attendee_name: string;
-	status: string;
-	id: string;
+	registration_name: string;
+	attendee_status: ATTENDEE_STATUS;
+	event_id: string;
 	title: string;
 	description: string;
-	start_time: string;
-	end_time: string;
-	location: string;
+	registration_open: Date;
+	registration_close: Date;
+	event_date: Date;
+	location_type: LOCATION_TYPE;
 	street: string;
 	city_suburb: string;
 	state: string;
@@ -16,16 +20,17 @@ export interface RegisteredEventModel {
 
 export interface RegisteredEventResponseModel {
 	attendee: {
-		attendee_name: string;
-		status: string;
+		registration_name: string;
+		attendee_status: ATTENDEE_STATUS;
 	};
 	event: {
-		id: string;
+		event_id: string;
 		title: string;
 		description: string;
-		start_time: string;
-		end_time: string;
-		location: string;
+		registration_open: Date;
+		registration_close: Date;
+		event_date: Date;
+		location_type: LOCATION_TYPE;
 	};
 	address: {
 		street: string;
