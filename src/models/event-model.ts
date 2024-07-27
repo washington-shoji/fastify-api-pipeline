@@ -1,26 +1,33 @@
-export interface EventModel {
-	id?: string; //TODO: Refactor to have UUID type
-	userId: string; //TODO: Refactor to have UUID type
+export interface EventEntityModel {
+	event_id?: string;
+	user_id: string;
 	title: string;
 	description: string;
-	start_time: Date;
-	end_time: Date;
-	location: string;
+	registration_open: Date;
+	registration_close: Date;
+	event_date: Date;
+	location_type: LOCATION_TYPE;
+	created_at?: Date;
+	updated_at?: Date;
 }
 
 export interface EventRequestModel {
 	title: string;
 	description: string;
-	start_time: Date;
-	end_time: Date;
-	location: string;
+	registration_open: Date;
+	registration_close: Date;
+	event_date: Date;
+	location_type: LOCATION_TYPE;
 }
 
 export interface EventResponseModel {
-	id: string; //TODO: Refactor to have UUID type
+	event_id: string;
 	title: string;
 	description: string;
-	start_time: Date;
-	end_time: Date;
-	location: string;
+	registration_open: Date;
+	registration_close: Date;
+	event_date: Date;
+	location_type: LOCATION_TYPE;
 }
+
+export type LOCATION_TYPE = 'VENUE' | 'ONLINE';

@@ -8,14 +8,14 @@ import {
 	getUserEventsService,
 	getOtherUsersEventsService,
 } from '../services/event.service';
-import { EventModel } from '../models/event-model';
+import { EventRequestModel } from '../models/event-model';
 import logger from '../utils/logger.utils';
 import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 import { TokenExpiredError } from 'jsonwebtoken';
 
 export async function createEventController(
 	request: FastifyRequest<{
-		Body: EventModel;
+		Body: EventRequestModel;
 	}>,
 	reply: FastifyReply
 ) {
@@ -42,7 +42,7 @@ export async function createEventController(
 export async function findEventByIdController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
+			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
@@ -54,7 +54,7 @@ export async function findEventByIdController(
 		if (!userId) {
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
-		const event = await findEventByIdService(request.params.id, userId);
+		const event = await findEventByIdService(request.params.eventId, userId);
 		if (!event) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}
@@ -133,9 +133,9 @@ export async function getEventsController(
 export async function updateEventController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
+			eventId: string;
 		};
-		Body: EventModel;
+		Body: EventRequestModel;
 	}>,
 	reply: FastifyReply
 ) {
@@ -146,12 +146,12 @@ export async function updateEventController(
 		if (!userId) {
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
-		const event = await findEventByIdService(request.params.id, userId);
+		const event = await findEventByIdService(request.params.eventId, userId);
 		if (!event) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}
 		const updatedEvent = await updateEventService(
-			request.params.id,
+			request.params.eventId,
 			userId,
 			request.body
 		);
@@ -172,7 +172,7 @@ export async function updateEventController(
 export async function deleteEventController(
 	request: FastifyRequest<{
 		Params: {
-			id: string;
+			eventId: string;
 		};
 	}>,
 	reply: FastifyReply
@@ -184,11 +184,14 @@ export async function deleteEventController(
 		if (!userId) {
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
-		const event = await findEventByIdService(request.params.id, userId);
+		const event = await findEventByIdService(request.params.eventId, userId);
 		if (!event) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}
-		const deletedEvent = await deleteEventService(request.params.id, userId);
+		const deletedEvent = await deleteEventService(
+			request.params.eventId,
+			userId
+		);
 		if (!deletedEvent) {
 			return reply.code(404).send({ message: 'Event not found' });
 		}

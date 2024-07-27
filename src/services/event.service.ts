@@ -1,4 +1,8 @@
-import { EventModel, EventRequestModel } from '../models/event-model';
+import {
+	EventEntityModel,
+	EventRequestModel,
+	EventResponseModel,
+} from '../models/event-model';
 import {
 	createEvent,
 	deleteEvent,
@@ -16,7 +20,9 @@ export async function createEventService(
 ) {
 	try {
 		// Additional business logic can go here
-		return await createEvent(userId, eventData);
+		const eventEntityData = { ...eventData, user_id: userId };
+		const result: EventEntityModel = await createEvent(eventEntityData);
+		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error creating event');
@@ -27,10 +33,11 @@ export async function createEventService(
 	}
 }
 
-export async function findEventByIdService(id: string, userId: string) {
+export async function findEventByIdService(eventId: string, userId: string) {
 	try {
 		// Additional processing or business logic can go here
-		return await findEventById(id, userId);
+		const result: EventEntityModel = await findEventById(eventId, userId);
+		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find event');
@@ -44,7 +51,8 @@ export async function findEventByIdService(id: string, userId: string) {
 export async function getUserEventsService(userId: string) {
 	try {
 		// Additional processing or business logic can go here
-		return await getUserEvents(userId);
+		const result: EventEntityModel[] = await getUserEvents(userId);
+		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find events');
@@ -58,7 +66,8 @@ export async function getUserEventsService(userId: string) {
 export async function getOtherUsersEventsService(userId: string) {
 	try {
 		// Additional processing or business logic can go here
-		return await getOtherUsersEvents(userId);
+		const result: EventEntityModel[] = await getOtherUsersEvents(userId);
+		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find events');
@@ -72,7 +81,8 @@ export async function getOtherUsersEventsService(userId: string) {
 export async function getEventsService() {
 	try {
 		// Additional processing or business logic can go here
-		return await getEvents();
+		const result: EventEntityModel[] = await getEvents();
+		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find events');
@@ -84,13 +94,19 @@ export async function getEventsService() {
 }
 
 export async function updateEventService(
-	id: string,
+	eventId: string,
 	userId: string,
-	eventData: EventModel
+	eventData: EventRequestModel
 ) {
 	try {
 		// Additional processing or validations can go here
-		return await updateEvent(id, userId, eventData);
+		const eventEntityData = {
+			...eventData,
+			event_id: eventId,
+			user_id: userId,
+		};
+		const result: EventEntityModel = await updateEvent(eventEntityData);
+		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not update event');
@@ -101,10 +117,11 @@ export async function updateEventService(
 	}
 }
 
-export async function deleteEventService(id: string, userId: string) {
+export async function deleteEventService(eventId: string, userId: string) {
 	try {
 		// Business logic before deleting an event can go here
-		return await deleteEvent(id, userId);
+		const result: EventEntityModel = await deleteEvent(eventId, userId);
+		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not delete event');
@@ -113,4 +130,33 @@ export async function deleteEventService(id: string, userId: string) {
 		// For example, you can throw a custom error with a more user-friendly message:
 		throw new Error('Failed to delete event. Please try again later.');
 	}
+}
+
+function responseDataTransformer(input: EventEntityModel): EventResponseModel {
+	return <EventResponseModel>{
+		event_id: input?.event_id ?? null,
+		title: input?.title ?? null,
+		description: input?.description ?? null,
+		registration_open: input?.registration_open ?? null,
+		registration_close: input?.registration_close ?? null,
+		event_date: input?.event_date ?? null,
+		location_type: input?.location_type ?? null,
+	};
+}
+
+function responseDataTransformerArray(
+	inputItems: EventEntityModel[]
+): EventResponseModel[] {
+	return inputItems.map(
+		(input) =>
+			<EventResponseModel>{
+				event_id: input?.event_id ?? null,
+				title: input?.title ?? null,
+				description: input?.description ?? null,
+				registration_open: input?.registration_open ?? null,
+				registration_close: input?.registration_close ?? null,
+				event_date: input?.event_date ?? null,
+				location_type: input?.location_type ?? null,
+			}
+	);
 }

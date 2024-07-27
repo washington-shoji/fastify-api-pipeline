@@ -26,11 +26,11 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.get('/events', getEventsController);
 
 	// Get Single Event by ID
-	fastify.get('/events/:id', findEventByIdController);
+	fastify.get('/events/:eventId', findEventByIdController);
 
 	// Update Event by ID
-	fastify.put('/events/:id', updateEventController);
+	fastify.put('/events/:eventId', updateEventController);
 
 	// Delete Event by ID
-	fastify.delete('/events/:id', deleteEventController);
+	fastify.delete('/events/:eventId', deleteEventController);
 }

@@ -1,15 +1,42 @@
 import pool from '../database/db';
-import { EventModel, EventRequestModel } from '../models/event-model';
+import { EventEntityModel } from '../models/event-model';
 import { generateUUIDv7, parseUUID } from '../utils/uuidgenerator.utils';
 
-export async function createEvent(
-	userId: string,
-	eventData: EventRequestModel
-) {
-	const { title, description, start_time, end_time, location } = eventData;
-	const userUuid = parseUUID(userId);
+export async function createEvent(eventData: EventEntityModel) {
+	const {
+		user_id,
+		title,
+		description,
+		registration_open,
+		registration_close,
+		event_date,
+		location_type,
+	} = eventData;
+	const userUuid = parseUUID(user_id);
 	const uuid = generateUUIDv7();
-	const query = `INSERT INTO events (id, user_id, title, description, start_time, end_time, location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+	const query = `
+	INSERT INTO 
+	events (
+		event_id, 
+		user_id, 
+		title, 
+		description, 
+		registration_open, 
+		registration_close, 
+		event_date,
+		location_type
+	) 
+	VALUES (
+		$1, 
+		$2, 
+		$3, 
+		$4, 
+		$5, 
+		$6, 
+		$7,
+		$8
+	) 
+	RETURNING *`;
 
 	const client = await pool.connect();
 
@@ -20,9 +47,10 @@ export async function createEvent(
 			userUuid,
 			title,
 			description,
-			start_time,
-			end_time,
-			location,
+			registration_open,
+			registration_close,
+			event_date,
+			location_type,
 		]);
 
 		await client.query('COMMIT');
@@ -35,15 +63,32 @@ export async function createEvent(
 	}
 }
 
-export async function updateEvent(
-	id: string,
-	userId: string,
-	eventData: EventModel
-) {
-	const { title, description, start_time, end_time, location } = eventData;
-	const uuid = parseUUID(id);
-	const userUuid = parseUUID(userId);
-	const query = `UPDATE events SET title = COALESCE($1, title), description = COALESCE($2, description), start_time = COALESCE($3, start_time), end_time = COALESCE($4, end_time), location = COALESCE($5, location), updated_at = NOW() WHERE id = $6 AND user_id = $7  RETURNING *`;
+export async function updateEvent(eventData: EventEntityModel) {
+	const {
+		event_id,
+		user_id,
+		title,
+		description,
+		registration_open,
+		registration_close,
+		event_date,
+		location_type,
+	} = eventData;
+	const uuid = parseUUID(event_id as string);
+	const userUuid = parseUUID(user_id);
+	const query = `
+	UPDATE events 
+	SET 
+		title = COALESCE($1, title), 
+		description = COALESCE($2, description), 
+		registration_open = COALESCE($3, registration_open), 
+		registration_close = COALESCE($4, registration_close),
+		event_date = COALESCE($5, event_date),  
+		location_type = COALESCE($6, location_type), 
+		updated_at = NOW() 
+	WHERE 
+		event_id = $7 AND user_id = $8  
+	RETURNING *`;
 
 	const client = await pool.connect();
 
@@ -52,9 +97,10 @@ export async function updateEvent(
 		const result = await client.query(query, [
 			title,
 			description,
-			start_time,
-			end_time,
-			location,
+			registration_open,
+			registration_close,
+			event_date,
+			location_type,
 			uuid,
 			userUuid,
 		]);
@@ -69,10 +115,10 @@ export async function updateEvent(
 	}
 }
 
-export async function deleteEvent(id: string, userId: string) {
-	const uuid = parseUUID(id);
+export async function deleteEvent(eventId: string, userId: string) {
+	const uuid = parseUUID(eventId);
 	const userUuid = parseUUID(userId);
-	const query = `DELETE FROM events WHERE id = $1 AND user_id = $2 RETURNING *`;
+	const query = `DELETE FROM events WHERE event_id = $1 AND user_id = $2 RETURNING *`;
 
 	const client = await pool.connect();
 
@@ -90,10 +136,10 @@ export async function deleteEvent(id: string, userId: string) {
 	}
 }
 
-export async function findEventById(id: string, userId: string) {
-	const uuid = parseUUID(id);
+export async function findEventById(eventId: string, userId: string) {
+	const uuid = parseUUID(eventId);
 	const userUuid = parseUUID(userId);
-	const query = `SELECT * FROM events WHERE id = $1 AND user_id = $2`;
+	const query = `SELECT * FROM events WHERE event_id = $1 AND user_id = $2`;
 	const client = await pool.connect();
 
 	try {
