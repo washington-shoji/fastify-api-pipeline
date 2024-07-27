@@ -8,14 +8,15 @@ export async function findAllRegisteredEventsByUser(
 	const userUuid = parseUUID(userId);
 	const query = `
     SELECT
-        at.attendee_name,
-        at.status,
-        e.id,
+        at.registration_name,
+        at.attendee_status,
+        e.event_id,
         e.title,
         e.description,
-        e.start_time,
-        e.end_time,
-        e.location,
+        e.registration_open,
+        e.registration_close,
+        e.event_date,
+        e.location_type,
         a.street,
         a.city_suburb,
         a.state,
@@ -23,7 +24,7 @@ export async function findAllRegisteredEventsByUser(
         a.postal_code
     FROM 
         event_attendees at
-        LEFT JOIN events e ON e.id = at.event_id
+        LEFT JOIN events e ON e.event_id = at.event_id
         LEFT JOIN event_addresses a ON a.event_id = at.event_id
     WHERE
         at.user_id = $1     

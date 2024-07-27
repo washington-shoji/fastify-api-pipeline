@@ -50,7 +50,7 @@ export async function loginUserService(
 	}
 
 	const accessToken = jwt.sign(
-		{ userId: user.id },
+		{ userId: user.user_id },
 		String(process.env.JWT_SECRET).replace(/\\n/g, '\n'),
 		{
 			expiresIn: '5m',
@@ -59,13 +59,13 @@ export async function loginUserService(
 	);
 
 	const refreshToken = jwt.sign(
-		{ userId: user.id },
+		{ userId: user.user_id },
 		String(process.env.REFRESH_TOKEN_SECRET).replace(/\\n/g, '\n'),
 		{ expiresIn: '7d' }
 	);
 
 	// Store refreshToken in the database with its expiry date
-	await storeRefreshToken(user.id, refreshToken);
+	await storeRefreshToken(user.user_id, refreshToken);
 
 	return { accessToken, refreshToken };
 }
