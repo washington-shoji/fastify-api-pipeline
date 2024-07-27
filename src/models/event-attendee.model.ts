@@ -1,20 +1,22 @@
-export interface EventAttendeeModel {
-	id?: string;
-	eventId: string;
-	userId: string;
-	attendee_name: string;
-	status: string;
+export interface EventAttendeeEntityModel {
+	attendee_id?: string;
+	event_id: string;
+	user_id: string;
+	registration_name: string;
+	attendee_status: ATTENDEE_STATUS;
 	created_at?: Date;
 	updated_at?: Date;
 }
 
 export interface EventAttendeeModelRequest {
-	attendeeName: string;
-	status: string;
+	registration_name: string;
+	attendee_status: ATTENDEE_STATUS;
 }
 
 export interface EventAttendeeModelResponse {
-	id: string;
-	attendeeName: string;
-	status: string;
+	attendee_id: string;
+	registration_name: string;
+	attendee_status: ATTENDEE_STATUS;
 }
+
+export type ATTENDEE_STATUS = 'ATTENDING' | 'TENTATIVE' | 'NOT-ATTENDING';

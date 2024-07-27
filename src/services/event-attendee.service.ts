@@ -1,5 +1,5 @@
 import {
-	EventAttendeeModel,
+	EventAttendeeEntityModel,
 	EventAttendeeModelRequest,
 	EventAttendeeModelResponse,
 } from '../models/event-attendee.model';
@@ -18,14 +18,13 @@ export async function createEventAttendeeService(
 	attendeeData: EventAttendeeModelRequest
 ): Promise<EventAttendeeModelResponse> {
 	try {
-		const eventAttendeeEntity: EventAttendeeModel = {
+		const eventAttendeeEntity: EventAttendeeEntityModel = {
 			...attendeeData,
-			eventId: eventId,
-			userId: userId,
-			attendee_name: attendeeData.attendeeName,
+			event_id: eventId,
+			user_id: userId,
 		};
 
-		const result: EventAttendeeModel = await createEventAttendee(
+		const result: EventAttendeeEntityModel = await createEventAttendee(
 			eventAttendeeEntity
 		);
 
@@ -41,7 +40,7 @@ export async function findEventAttendeeByIdService(
 	userId: string
 ): Promise<EventAttendeeModelResponse> {
 	try {
-		const result: EventAttendeeModel =
+		const result: EventAttendeeEntityModel =
 			await findEventAttendeeByUserIdAndEventId(eventId, userId);
 		return responseDataTransformer(result);
 	} catch (error) {
@@ -54,7 +53,7 @@ export async function findEventAttendeesService(
 	eventId: string
 ): Promise<EventAttendeeModelResponse[]> {
 	try {
-		const result: EventAttendeeModel[] = await getEventAttendees(eventId);
+		const result: EventAttendeeEntityModel[] = await getEventAttendees(eventId);
 		return responseDataTransformerArray(result);
 	} catch (error) {
 		logger.error(error, 'Error finding event attendees');
@@ -73,15 +72,14 @@ export async function updateEventAttendeesService(
 			userId
 		);
 
-		const eventAttendeeEntity: EventAttendeeModel = {
+		const eventAttendeeEntity: EventAttendeeEntityModel = {
 			...attendeeData,
-			id: eventAttendee.id,
-			eventId: eventId,
-			userId: userId,
-			attendee_name: attendeeData.attendeeName,
+			attendee_id: eventAttendee.attendee_id,
+			event_id: eventId,
+			user_id: userId,
 		};
 
-		const result: EventAttendeeModel = await updateEventAttendee(
+		const result: EventAttendeeEntityModel = await updateEventAttendee(
 			eventAttendeeEntity
 		);
 
@@ -108,24 +106,24 @@ export async function deleteEventAttendeeService(
 }
 
 function responseDataTransformer(
-	input: EventAttendeeModel
+	input: EventAttendeeEntityModel
 ): EventAttendeeModelResponse {
 	return <EventAttendeeModelResponse>{
-		id: input.id,
-		attendeeName: input.attendee_name,
-		status: input.status,
+		attendee_id: input.attendee_id,
+		registration_name: input.registration_name,
+		attendee_status: input.attendee_status,
 	};
 }
 
 function responseDataTransformerArray(
-	inputItems: EventAttendeeModel[]
+	inputItems: EventAttendeeEntityModel[]
 ): EventAttendeeModelResponse[] {
 	return inputItems.map(
 		(input) =>
 			<EventAttendeeModelResponse>{
-				id: input.id,
-				attendeeName: input.attendee_name,
-				status: input.status,
+				attendee_id: input.attendee_id,
+				registration_name: input.registration_name,
+				attendee_status: input.attendee_status,
 			}
 	);
 }
