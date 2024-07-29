@@ -31,3 +31,11 @@ export interface EventResponseModel {
 }
 
 export type LOCATION_TYPE = 'VENUE' | 'ONLINE';
+
+export interface EventRegistrationEntityModel extends EventEntityModel {
+	attendee_status: string;
+}
+
+export interface EventRegistrationResponseModel extends EventResponseModel {
+	attendee_status: string;
+}

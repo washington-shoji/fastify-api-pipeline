@@ -1,5 +1,7 @@
 import {
 	EventEntityModel,
+	EventRegistrationEntityModel,
+	EventRegistrationResponseModel,
 	EventRequestModel,
 	EventResponseModel,
 } from '../models/event-model';
@@ -66,8 +68,10 @@ export async function getUserEventsService(userId: string) {
 export async function getOtherUsersEventsService(userId: string) {
 	try {
 		// Additional processing or business logic can go here
-		const result: EventEntityModel[] = await getOtherUsersEvents(userId);
-		return responseDataTransformerArray(result);
+		const result: EventRegistrationEntityModel[] = await getOtherUsersEvents(
+			userId
+		);
+		return responseRegistrationDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
 		logger.error(error, 'Error could not find events');
@@ -157,6 +161,24 @@ function responseDataTransformerArray(
 				registration_close: input?.registration_close ?? null,
 				event_date: input?.event_date ?? null,
 				location_type: input?.location_type ?? null,
+			}
+	);
+}
+
+function responseRegistrationDataTransformerArray(
+	inputItems: EventRegistrationEntityModel[]
+): EventRegistrationResponseModel[] {
+	return inputItems.map(
+		(input) =>
+			<EventRegistrationResponseModel>{
+				event_id: input?.event_id ?? null,
+				title: input?.title ?? null,
+				description: input?.description ?? null,
+				registration_open: input?.registration_open ?? null,
+				registration_close: input?.registration_close ?? null,
+				event_date: input?.event_date ?? null,
+				location_type: input?.location_type ?? null,
+				attendee_status: input?.attendee_status ?? null,
 			}
 	);
 }
