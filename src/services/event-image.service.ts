@@ -7,7 +7,6 @@ import {
 	getEventsImage,
 	updateEventImage,
 } from '../repositories/event-image.repository';
-import logger from '../utils/logger.utils';
 import { deleteFileFromS3, uploadImageFileToS3 } from './s3.service';
 import { findEventById } from '../repositories/event.repository';
 
@@ -50,7 +49,7 @@ export async function createEventImageService(
 			};
 		}
 	} catch (error) {
-		logger.error(error, 'Error creating event image');
+		console.log(error, 'Error creating event image');
 		throw new Error('Failed to create event image. Please try again later.');
 	}
 }
@@ -65,7 +64,7 @@ export async function findEventImageByIdService(id: string) {
 			imageKey: repositoryResponse.image_key,
 		};
 	} catch (error) {
-		logger.error(error, 'Error finding event image');
+		console.log(error, 'Error finding event image');
 		throw new Error('Failed to find event image. Please try again later.');
 	}
 }
@@ -74,7 +73,7 @@ export async function findEventImagesService() {
 	try {
 		return await getEventsImage();
 	} catch (error) {
-		logger.error(error, 'Error finding event images');
+		console.log(error, 'Error finding event images');
 		throw new Error('Failed to find event images. Please try again later.');
 	}
 }
@@ -118,7 +117,7 @@ export async function updateEventImageService(
 			};
 		}
 	} catch (error) {
-		logger.error(error, 'Error updating event images');
+		console.log(error, 'Error updating event images');
 		throw new Error('Failed to update event images. Please try again later.');
 	}
 }
@@ -141,7 +140,7 @@ export async function deleteEventImageService(imageId: string) {
 			return await deleteEventImage(imageId);
 		}
 	} catch (error) {
-		logger.error(error, 'Error deleting event images');
+		console.log(error, 'Error deleting event images');
 		throw new Error('Failed to delete event images. Please try again later.');
 	}
 }

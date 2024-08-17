@@ -3,7 +3,6 @@ import {
 	RegisteredEventResponseModel,
 } from '../models/event-registered.model';
 import { findAllRegisteredEventsByUser } from '../repositories/event-registered.repository';
-import logger from '../utils/logger.utils';
 
 export async function getAllRegisteredEvents(
 	userId: string
@@ -14,7 +13,7 @@ export async function getAllRegisteredEvents(
 		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not find registered events');
+		console.log(error, 'Error could not find registered events');
 
 		throw new Error(
 			'Failed to find registered events. Please try again later.'

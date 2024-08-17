@@ -9,7 +9,6 @@ import {
 	getOtherUsersEventsService,
 } from '../services/event.service';
 import { EventRequestModel } from '../models/event-model';
-import logger from '../utils/logger.utils';
 import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 import { TokenExpiredError } from 'jsonwebtoken';
 
@@ -35,7 +34,7 @@ export async function createEventController(
 		}
 
 		reply.code(500).send({ message: 'Error creating event' });
-		logger.error(error, 'Error handling createEventController');
+		console.log(error, 'Error handling createEventController');
 	}
 }
 
@@ -65,7 +64,7 @@ export async function findEventByIdController(
 		}
 
 		reply.code(500).send({ message: 'Error retrieving event' });
-		logger.error(error, 'Error handling findEventByIdController');
+		console.log(error, 'Error handling findEventByIdController');
 	}
 }
 
@@ -89,7 +88,7 @@ export async function getUserEventsController(
 		}
 
 		reply.code(500).send({ message: 'Error retrieving events' });
-		logger.error(error, 'Error handling getEventsController');
+		console.log(error, 'Error handling getEventsController');
 	}
 }
 
@@ -113,7 +112,7 @@ export async function getOtherUsersEventsController(
 		}
 
 		reply.code(500).send({ message: 'Error retrieving events' });
-		logger.error(error, 'Error handling getEventsController');
+		console.log(error, 'Error handling getEventsController');
 	}
 }
 
@@ -126,7 +125,7 @@ export async function getEventsController(
 		reply.code(200).send(events);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving events' });
-		logger.error(error, 'Error handling getEventsController');
+		console.log(error, 'Error handling getEventsController');
 	}
 }
 
@@ -165,7 +164,7 @@ export async function updateEventController(
 		}
 
 		reply.code(500).send({ message: 'Error updating event' });
-		logger.error(error, 'Error handling updateEventController');
+		console.log(error, 'Error handling updateEventController');
 	}
 }
 
@@ -203,6 +202,6 @@ export async function deleteEventController(
 		}
 
 		reply.code(500).send({ message: 'Error deleting event' });
-		logger.error(error, 'Error handling deleteEventController');
+		console.log(error, 'Error handling deleteEventController');
 	}
 }

@@ -3,24 +3,32 @@
 import fastify from 'fastify';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
-import eventRoutes from './routes/event.route';
-import authRoutes from './routes/auth.route';
+import fastifyRateLimit from '@fastify/rate-limit';
+
 import runMigrations from './database/dbMigrate';
 import fileUploadRoutes from './routes/uploadfile.controller';
-import logger from './utils/logger.utils';
+
+import eventRoutes from './routes/event.route';
+import authRoutes from './routes/auth.route';
 import eventAddressRoutes from './routes/event-address.route';
 import eventImageRoutes from './routes/event-image.route';
 import publicEventRoutes from './routes/public-event.route';
 import eventAttendeeRoutes from './routes/event-attendee.route';
 import eventRegisteredRoutes from './routes/event-registered.route';
+import preSignedUrlRoutes from './routes/upload-presigned-url.route';
 
-const app = fastify({ logger: true });
+const app = fastify();
 
 app.register(cors, {
 	origin: 'http://localhost:4200',
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 });
 app.register(multipart);
+
+app.register(fastifyRateLimit, {
+	max: 100,
+	timeWindow: '1 minute',
+});
 
 // Register public event routes
 app.register(publicEventRoutes, { prefix: '/api/v1' });
@@ -33,6 +41,7 @@ app.register(eventImageRoutes, { prefix: '/api/v1' });
 app.register(eventAttendeeRoutes, { prefix: '/api/v1' });
 app.register(eventRegisteredRoutes, { prefix: '/api/v1' });
 app.register(fileUploadRoutes, { prefix: '/api/v1' });
+app.register(preSignedUrlRoutes, { prefix: '/api/v1' });
 
 // Start the server
 async function start() {
@@ -42,7 +51,7 @@ async function start() {
 		await app.listen({ port: 3000 });
 		console.log(`Server is running at http://localhost:3000`);
 	} catch (err) {
-		logger.error(err, 'Server Error');
+		console.log('Server Error: ', err);
 		process.exit(1);
 	}
 }

@@ -14,7 +14,6 @@ import {
 	getUserEvents,
 	updateEvent,
 } from '../repositories/event.repository';
-import logger from '../utils/logger.utils';
 
 export async function createEventService(
 	userId: string,
@@ -27,7 +26,7 @@ export async function createEventService(
 		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error creating event');
+		console.log(error, 'Error creating event');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -42,7 +41,7 @@ export async function findEventByIdService(eventId: string, userId: string) {
 		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not find event');
+		console.log(error, 'Error could not find event');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -57,7 +56,7 @@ export async function getUserEventsService(userId: string) {
 		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not find events');
+		console.log(error, 'Error could not find events');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -74,7 +73,7 @@ export async function getOtherUsersEventsService(userId: string) {
 		return responseRegistrationDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not find events');
+		console.log(error, 'Error could not find events');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -89,7 +88,7 @@ export async function getEventsService() {
 		return responseDataTransformerArray(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not find events');
+		console.log(error, 'Error could not find events');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -113,7 +112,7 @@ export async function updateEventService(
 		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not update event');
+		console.log(error, 'Error could not update event');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:
@@ -128,7 +127,7 @@ export async function deleteEventService(eventId: string, userId: string) {
 		return responseDataTransformer(result);
 	} catch (error) {
 		// Log the error for debugging purposes
-		logger.error(error, 'Error could not delete event');
+		console.log(error, 'Error could not delete event');
 
 		// Here, you can decide how to handle the error.
 		// For example, you can throw a custom error with a more user-friendly message:

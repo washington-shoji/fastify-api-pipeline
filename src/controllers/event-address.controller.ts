@@ -1,5 +1,4 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import logger from '../utils/logger.utils';
 import { EventAddressModelRequest } from '../models/event-address-model';
 import {
 	createEventAddressService,
@@ -28,7 +27,7 @@ export async function createEventAddressController(
 		reply.code(201).send(newEventAddress);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event address' });
-		logger.error(error, 'Error handling createEventAddressController');
+		console.log(error, 'Error handling createEventAddressController');
 	}
 }
 
@@ -51,7 +50,7 @@ export async function findEventAddressByIdController(
 		reply.code(200).send(event);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving event address' });
-		logger.error(error, 'Error handling findEventAddressByIdController');
+		console.log(error, 'Error handling findEventAddressByIdController');
 	}
 }
 
@@ -72,7 +71,7 @@ export async function findEventAddressByEventIdController(
 		reply.code(200).send(event);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving event address' });
-		logger.error(error, 'Error handling findEventAddressByIdController');
+		console.log(error, 'Error handling findEventAddressByIdController');
 	}
 }
 
@@ -91,7 +90,7 @@ export async function getEventsAddressesController(
 		reply.code(200).send(events);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving events' });
-		logger.error(error, 'Error handling getEventsAddressController');
+		console.log(error, 'Error handling getEventsAddressController');
 	}
 }
 
@@ -119,7 +118,7 @@ export async function updateEventAddressController(
 		reply.code(200).send(updatedEvent);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error updating event address' });
-		logger.error(error, 'Error handling updateEventAddressController');
+		console.log(error, 'Error handling updateEventAddressController');
 	}
 }
 
@@ -142,6 +141,6 @@ export async function deleteEventAddressController(
 		reply.code(200).send({ message: deletedEvent });
 	} catch (error) {
 		reply.code(500).send({ message: 'Error deleting event address' });
-		logger.error(error, 'Error handling deleteEventAddressController');
+		console.log(error, 'Error handling deleteEventAddressController');
 	}
 }

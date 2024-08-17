@@ -5,7 +5,6 @@ import {
 	getEventsService,
 	updateEventService,
 } from '../../../services/event.service';
-import logger from '../../../utils/logger.utils';
 import * as eventRepo from '../../../repositories/event.repository';
 import { LOCATION_TYPE } from '../../../models/event-model';
 
@@ -57,8 +56,6 @@ describe('Event Service', () => {
 			await expect(createEventService(userId, mockEventEntity)).rejects.toThrow(
 				'Failed to create event. Please try again later.'
 			);
-
-			expect(logger.error).toHaveBeenCalledWith(error, 'Error creating event');
 		});
 	});
 
@@ -91,11 +88,6 @@ describe('Event Service', () => {
 
 			await expect(findEventByIdService(eventId, userId)).rejects.toThrow(
 				'Failed to find event. Please try again later.'
-			);
-
-			expect(logger.error).toHaveBeenCalledWith(
-				error,
-				'Error could not find event'
 			);
 		});
 	});
@@ -137,11 +129,6 @@ describe('Event Service', () => {
 
 			await expect(getEventsService()).rejects.toThrow(
 				'Failed to find events. Please try again later.'
-			);
-
-			expect(logger.error).toHaveBeenCalledWith(
-				error,
-				'Error could not find events'
 			);
 		});
 	});
@@ -186,11 +173,6 @@ describe('Event Service', () => {
 			await expect(
 				updateEventService(eventId, userId, mockEventData)
 			).rejects.toThrow('Failed to update event. Please try again later.');
-
-			expect(logger.error).toHaveBeenCalledWith(
-				error,
-				'Error could not update event'
-			);
 		});
 	});
 
@@ -211,11 +193,6 @@ describe('Event Service', () => {
 
 			await expect(deleteEventService(eventId, userId)).rejects.toThrow(
 				'Failed to delete event. Please try again later.'
-			);
-
-			expect(logger.error).toHaveBeenCalledWith(
-				error,
-				'Error could not delete event'
 			);
 		});
 	});

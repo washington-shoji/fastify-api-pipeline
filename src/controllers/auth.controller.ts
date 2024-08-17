@@ -10,7 +10,6 @@ import {
 	revokeRefreshToken,
 } from '../repositories/auth.repository';
 import { decodeRefreshToken } from '../tests/unit-tests/utils/decode-token';
-import logger from '../utils/logger.utils';
 
 export async function registerController(
 	request: FastifyRequest<{
@@ -100,7 +99,7 @@ export async function refreshTokenController(
 		}
 
 		reply.code(500).send({ message: 'Error refreshing token' });
-		logger.error(error, 'Error handling refreshTokenController');
+		console.log(error, 'Error handling refreshTokenController');
 	}
 }
 

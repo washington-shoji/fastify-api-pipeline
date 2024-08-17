@@ -1,6 +1,5 @@
 import { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify/types/request';
-import logger from '../utils/logger.utils';
 import {
 	createEventImageService,
 	deleteEventImageService,
@@ -44,7 +43,7 @@ export async function createEventImageController(
 			},
 		});
 	} catch (error) {
-		logger.error(error, 'Error handling createEventImageController');
+		console.log(error, 'Error handling createEventImageController');
 		reply.code(500).send({ message: 'Error creating event image' });
 	}
 }
@@ -77,7 +76,7 @@ export async function updateEventImageController(
 			},
 		});
 	} catch (error) {
-		logger.error(error, 'Error handling updateEventImageController');
+		console.log(error, 'Error handling updateEventImageController');
 		reply.code(500).send({ message: 'Error updating event image' });
 	}
 }
@@ -98,7 +97,7 @@ export async function deleteEventImageController(
 		await deleteEventImageService(imageId);
 		reply.code(201).send({ response: 'Event image deleted successfully' });
 	} catch (error) {
-		logger.error(error, 'Error handling deleteEventImageController');
+		console.log(error, 'Error handling deleteEventImageController');
 		reply.code(500).send({ message: 'Error deleting event image' });
 	}
 }
@@ -119,7 +118,7 @@ export async function findByIdEventImageController(
 			},
 		});
 	} catch (error) {
-		logger.error(error, 'Error handling findByIdEventImageController');
+		console.log(error, 'Error handling findByIdEventImageController');
 		reply.code(500).send({ message: 'Error finding event image' });
 	}
 }

@@ -10,7 +10,6 @@ import {
 	getEventAttendees,
 	updateEventAttendee,
 } from '../repositories/event-attendee.repository';
-import logger from '../utils/logger.utils';
 
 export async function createEventAttendeeService(
 	eventId: string,
@@ -30,7 +29,7 @@ export async function createEventAttendeeService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error creating event attendee');
+		console.log(error, 'Error creating event attendee');
 		throw new Error('Failed to create event attendee. Please try again later.');
 	}
 }
@@ -44,7 +43,7 @@ export async function findEventAttendeeByIdService(
 			await findEventAttendeeByUserIdAndEventId(eventId, userId);
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error finding event attendee');
+		console.log(error, 'Error finding event attendee');
 		throw new Error('Failed to find event attendee. Please try again later.');
 	}
 }
@@ -56,7 +55,7 @@ export async function findEventAttendeesService(
 		const result: EventAttendeeEntityModel[] = await getEventAttendees(eventId);
 		return responseDataTransformerArray(result);
 	} catch (error) {
-		logger.error(error, 'Error finding event attendees');
+		console.log(error, 'Error finding event attendees');
 		throw new Error('Failed to find event attendees. Please try again later.');
 	}
 }
@@ -85,7 +84,7 @@ export async function updateEventAttendeesService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error updating event attendee');
+		console.log(error, 'Error updating event attendee');
 		throw new Error('Failed to update event attendee. Please try again later.');
 	}
 }
@@ -98,7 +97,7 @@ export async function deleteEventAttendeeService(
 		await deleteEventAttendee(eventId, userId);
 		return 'Deleted successfully';
 	} catch (error) {
-		logger.error(error, 'Error deleting event attendees');
+		console.log(error, 'Error deleting event attendees');
 		throw new Error(
 			'Failed to delete event attendees. Please try again later.'
 		);

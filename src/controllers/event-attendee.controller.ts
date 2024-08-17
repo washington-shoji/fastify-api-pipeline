@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { EventAttendeeModelRequest } from '../models/event-attendee.model';
-import logger from '../utils/logger.utils';
 import {
 	createEventAttendeeService,
 	deleteEventAttendeeService,
@@ -35,7 +34,7 @@ export async function createEventAttendeeController(
 		reply.code(201).send(newEventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event attendee' });
-		logger.error(error, 'Error handling createEventAttendeeController');
+		console.log(error, 'Error handling createEventAttendeeController');
 	}
 }
 
@@ -59,7 +58,7 @@ export async function findEventAttendeeByEventIdController(
 		reply.code(200).send(eventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event attendee' });
-		logger.error(error, 'Error handling createEventAttendeeController');
+		console.log(error, 'Error handling createEventAttendeeController');
 	}
 }
 
@@ -78,7 +77,7 @@ export async function getEventAttendeesController(
 		reply.code(200).send(eventAttendees);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error retrieving event attendee' });
-		logger.error(error, 'Error handling getEventAttendeesController');
+		console.log(error, 'Error handling getEventAttendeesController');
 	}
 }
 
@@ -107,7 +106,7 @@ export async function updateEventAttendeeController(
 		reply.code(200).send(updatedEventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error creating event attendee' });
-		logger.error(error, 'Error handling updateEventAttendeeController');
+		console.log(error, 'Error handling updateEventAttendeeController');
 	}
 }
 
@@ -131,6 +130,6 @@ export async function deleteEventAttendeeController(
 		reply.code(200).send(eventAttendee);
 	} catch (error) {
 		reply.code(500).send({ message: 'Error deleting event attendee' });
-		logger.error(error, 'Error handling deleteEventAttendeeController');
+		console.log(error, 'Error handling deleteEventAttendeeController');
 	}
 }

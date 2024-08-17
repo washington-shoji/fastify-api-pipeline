@@ -11,7 +11,6 @@ import {
 	getEventsAddresses,
 	updateEventAddress,
 } from '../repositories/event-address.repository';
-import logger from '../utils/logger.utils';
 
 export async function createEventAddressService(
 	eventId: string,
@@ -29,7 +28,7 @@ export async function createEventAddressService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error creating event address');
+		console.log(error, 'Error creating event address');
 		throw new Error('Failed to create event address. Please try again later.');
 	}
 }
@@ -46,7 +45,7 @@ export async function findEventAddressByIdService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error finding event address');
+		console.log(error, 'Error finding event address');
 		throw new Error('Failed to find event address. Please try again later.');
 	}
 }
@@ -61,7 +60,7 @@ export async function findEventAddressByEventIdService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error finding event address');
+		console.log(error, 'Error finding event address');
 		throw new Error('Failed to find event address. Please try again later.');
 	}
 }
@@ -74,7 +73,7 @@ export async function findEventAddressesService(
 
 		return responseDataTransformerArray(result);
 	} catch (error) {
-		logger.error(error, 'Error finding event addresses');
+		console.log(error, 'Error finding event addresses');
 		throw new Error('Failed to find event addresses. Please try again later.');
 	}
 }
@@ -97,7 +96,7 @@ export async function updateEventAddressService(
 
 		return responseDataTransformer(result);
 	} catch (error) {
-		logger.error(error, 'Error could not update event address');
+		console.log(error, 'Error could not update event address');
 		throw new Error('Failed to update event. Please try again later.');
 	}
 }
@@ -110,7 +109,7 @@ export async function deleteEventAddressService(
 		await deleteEventAddress(id, eventId);
 		return 'Deleted successfully';
 	} catch (error) {
-		logger.error(error, 'Error could not delete event address');
+		console.log(error, 'Error could not delete event address');
 		throw new Error('Failed to delete event address. Please try again later.');
 	}
 }

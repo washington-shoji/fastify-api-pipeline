@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import logger from '../utils/logger.utils';
 import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 
 export async function authMiddleware(
@@ -21,6 +20,6 @@ export async function authMiddleware(
 		}
 	} catch (error) {
 		reply.code(401).send({ message: 'Unauthorized' });
-		logger.error(error, 'Error Auth middleware');
+		console.log(error, 'Error Auth middleware');
 	}
 }
