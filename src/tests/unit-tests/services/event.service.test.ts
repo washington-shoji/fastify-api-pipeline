@@ -9,9 +9,6 @@ import * as eventRepo from '../../../repositories/event.repository';
 import { LOCATION_TYPE } from '../../../models/event-model';
 
 jest.mock('../../../repositories/event.repository');
-jest.mock('../../../utils/logger.utils', () => ({
-	error: jest.fn(),
-}));
 
 describe('Event Service', () => {
 	const userId = 'mock-userUuid-1';
