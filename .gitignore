@@ -9,3 +9,6 @@ coverage
 
 # build
 /dist
+
+# http-client
+test-http.http
