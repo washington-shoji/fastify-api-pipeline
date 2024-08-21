@@ -20,7 +20,7 @@ import preSignedUrlRoutes from './routes/upload-presigned-url.route';
 const app = fastify();
 
 app.register(cors, {
-	origin: 'http://localhost:4200',
+	origin: '*',
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 });
 app.register(multipart);
@@ -48,8 +48,8 @@ async function start() {
 	await runMigrations(); // Ensure tables are set up before starting the server
 
 	try {
-		await app.listen({ port: 3000 });
-		console.log(`Server is running at http://localhost:3000`);
+		await app.listen({ port: 3030, host: '0.0.0.0' });
+		console.log(`Server is running at http://localhost:3030`);
 	} catch (err) {
 		console.log('Server Error: ', err);
 		process.exit(1);
