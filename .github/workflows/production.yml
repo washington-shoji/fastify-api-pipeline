@@ -26,11 +26,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: List current directory before saving image
+        run: ls -alh
+
       - name: Build Docker image
         run: docker build -t fastify-api .
 
       - name: Save Docker image as artifact
         run: docker save -o fastify-api.tar fastify-api
+
+      - name: List current directory after saving image
+        run: ls -alh
 
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
@@ -48,6 +54,9 @@ jobs:
         with:
           name: fastify-api
           path: ./fastify-api.tar
+
+      - name: List contents after downloading artifact
+        run: ls -alh
 
       - name: Verify tar file
         run: tar -tf ./fastify-api.tar
