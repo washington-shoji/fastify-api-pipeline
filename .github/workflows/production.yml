@@ -49,8 +49,11 @@ jobs:
           name: fastify-api
           path: ./fastify-api.tar
 
+      - name: Verify tar file
+        run: tar -tf ./fastify-api.tar
+
       - name: Load Docker image
-        run: docker load < ./fastify-api.tar
+        run: sudo docker load < ./fastify-api.tar
 
       - name: Deploy to AWS Elastic Beanstalk
         env:
