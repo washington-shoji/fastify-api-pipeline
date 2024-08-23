@@ -58,6 +58,12 @@ jobs:
       - name: Load Docker image
         run: sudo docker load < ./fastify-api.tar
 
+      - name: Install AWS Elastic Beanstalk CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install awsebcli --upgrade
+
       - name: Deploy to AWS Elastic Beanstalk
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
