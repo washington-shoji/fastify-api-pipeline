@@ -1,0 +1,81 @@
+name: Production Deployment CI
+
+on:
+  push:
+    branches: [production]
+  pull_request:
+    branches: [production]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Docker image
+        run: docker build -t fastify-api .
+
+      - name: Save Docker image as artifact
+        run: docker save -o fastify-api.tar fastify-api
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastify-api
+          path: fastify-api.tar  # Ensure this points directly to the tar file
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fastify-api
+          path: ./  # Download to the current directory
+
+      - name: List contents after downloading artifact
+        run: ls -alh
+
+      - name: Verify tar file
+        run: tar -tf ./fastify-api.tar
+
+      - name: Load Docker image
+        run: sudo docker load < ./fastify-api.tar
+
+      - name: Install AWS Elastic Beanstalk CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install awsebcli --upgrade
+
+      - name: Deploy to AWS Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          DOCKER_TAG: 'latest'
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+        run: |
+          eb init -p docker fastify-api --region $AWS_REGION
+          eb create --single --instance_type t2.micro fastify-api-env
+          eb setenv DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }} JWT_SECRET=${{ secrets.JWT_SECRET }} REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }} S3_BUCKET=${{ secrets.S3_BUCKET }}
+          eb deploy

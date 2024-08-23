@@ -1,4 +1,4 @@
-name: Node.js Fastfy CI
+name: Pre-production CI
 
 on:
   push:
