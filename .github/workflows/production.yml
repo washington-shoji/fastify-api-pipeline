@@ -27,16 +27,16 @@ jobs:
         run: npm install
 
       - name: Build Docker image
-        run: |
-          docker build -t fastify-api .
+        run: docker build -t fastify-api .
 
       - name: Save Docker image as artifact
+        run: docker save fastify-api > ./fastify-api.tar
+
+      - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
           name: fastify-api
           path: ./fastify-api.tar
-          run: |
-            docker save fastify-api > ./fastify-api.tar
 
   deploy: 
     needs: build
