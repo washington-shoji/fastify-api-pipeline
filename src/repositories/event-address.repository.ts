@@ -11,7 +11,8 @@ export async function createEventAddress(
 	const eventUuid = parseUUID(event_id);
 	const query = `
 	INSERT INTO event_addresses (
-		address_id, event_id, 
+		address_id, 
+		event_id, 
 		street, 
 		city_suburb, 
 		state, 
@@ -29,18 +30,28 @@ export async function createEventAddress(
 	) 
 	RETURNING *
 	`;
+	const client = await pool.connect();
 
-	const result = await pool.query(query, [
-		uuid,
-		eventUuid,
-		street,
-		city_suburb,
-		state,
-		country,
-		postal_code,
-	]);
+	try {
+		await client.query('BEGIN');
+		const result = await client.query(query, [
+			uuid,
+			eventUuid,
+			street,
+			city_suburb,
+			state,
+			country,
+			postal_code,
+		]);
 
-	return result.rows[0];
+		await client.query('COMMIT');
+		return result.rows[0];
+	} catch (error) {
+		await client.query('ROLLBACK');
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function updateEventAddress(
@@ -63,17 +74,27 @@ export async function updateEventAddress(
 	WHERE address_id = $6 AND event_id = $7 
 	RETURNING *
 	`;
-	const result = await pool.query(query, [
-		street,
-		city_suburb,
-		state,
-		country,
-		postal_code,
-		uuid,
-		eventUuid,
-	]);
+	const client = await pool.connect();
 
-	return result.rows[0];
+	try {
+		await client.query('BEGIN');
+		const result = await client.query(query, [
+			street,
+			city_suburb,
+			state,
+			country,
+			postal_code,
+			uuid,
+			eventUuid,
+		]);
+		await client.query('COMMIT');
+		return result.rows[0];
+	} catch (error) {
+		await client.query('ROLLBACK');
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function deleteEventAddress(
@@ -87,8 +108,20 @@ export async function deleteEventAddress(
 	WHERE id = $1 AND event_id = $2 
 	RETURNING *
 	`;
-	const result = await pool.query(query, [uuid, eventUuid]);
-	return result.rows[0];
+
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+		const result = await client.query(query, [uuid, eventUuid]);
+		await client.query('COMMIT');
+		return result.rows[0];
+	} catch (error) {
+		await client.query('ROLLBACK');
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function findEventAddressById(
@@ -101,8 +134,16 @@ export async function findEventAddressById(
 	SELECT * FROM event_addresses 
 	WHERE id = $1 AND event_id = $2
 	`;
-	const result = await pool.query(query, [uuid, eventUuid]);
-	return result.rows[0];
+	const client = await pool.connect();
+
+	try {
+		const result = await client.query(query, [uuid, eventUuid]);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function findEventAddressByEventId(
@@ -113,8 +154,16 @@ export async function findEventAddressByEventId(
 	SELECT * FROM event_addresses 
 	WHERE event_id = $1
 	`;
-	const result = await pool.query(query, [eventUuid]);
-	return result.rows[0];
+	const client = await pool.connect();
+
+	try {
+		const result = await client.query(query, [eventUuid]);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
 }
 
 export async function getEventsAddresses(
@@ -125,6 +174,14 @@ export async function getEventsAddresses(
 	SELECT * FROM event_addresses 
 	WHERE event_id = $1
 	`;
-	const result = await pool.query(query, [eventUuid]);
-	return result.rows;
+	const client = await pool.connect();
+
+	try {
+		const result = await client.query(query, [eventUuid]);
+		return result.rows;
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
 }
