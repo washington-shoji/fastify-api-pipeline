@@ -17,7 +17,7 @@ import eventAttendeeRoutes from './routes/event-attendee.route';
 import eventRegisteredRoutes from './routes/event-registered.route';
 import preSignedUrlRoutes from './routes/upload-presigned-url.route';
 
-const app = fastify();
+const app = fastify({logger: true});
 
 app.register(cors, {
 	origin: '*',
