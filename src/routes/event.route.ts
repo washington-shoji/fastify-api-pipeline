@@ -10,11 +10,29 @@ import {
 } from '../controllers/event.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
+const bodyJsonSchema = {
+	type: 'object',
+	required: ['title', 'description', 'registration_open', 'registration_close', 'event_date', 'location_type'],
+	properties: {
+		title: { type: 'string' },
+		description: { type: 'string' },
+		registration_open: { type: 'string' },
+		registration_close: { type: 'string' },
+		event_date: { type: 'string' },
+		location_type: { type: 'string' },
+	}
+  }
+
+  const schema = {
+	body: bodyJsonSchema,
+  }
+
+
 export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.addHook('preHandler', authMiddleware);
 
 	// Create Event
-	fastify.post('/events', createEventController);
+	fastify.post('/events', {schema}, createEventController);
 
 	// Get All Events
 	fastify.get('/user-events', getUserEventsController);
@@ -29,7 +47,7 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.get('/events/:eventId', findEventByIdController);
 
 	// Update Event by ID
-	fastify.put('/events/:eventId', updateEventController);
+	fastify.put('/events/:eventId', {schema}, updateEventController);
 
 	// Delete Event by ID
 	fastify.delete('/events/:eventId', deleteEventController);
