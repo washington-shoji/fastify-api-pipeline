@@ -23,8 +23,16 @@ const bodyJsonSchema = {
 	}
   }
 
+  const paramsJsonSchema = {
+	type: 'object',
+	properties: {
+		eventId: { type: 'string' },
+	}
+  }
+
   const schema = {
 	body: bodyJsonSchema,
+	params: paramsJsonSchema,
   }
 
 
@@ -44,11 +52,11 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.get('/events', getEventsController);
 
 	// Get Single Event by ID
-	fastify.get('/events/:eventId', findEventByIdController);
+	fastify.get('/events/:eventId', {schema}, findEventByIdController);
 
 	// Update Event by ID
 	fastify.put('/events/:eventId', {schema}, updateEventController);
 
 	// Delete Event by ID
-	fastify.delete('/events/:eventId', deleteEventController);
+	fastify.delete('/events/:eventId', {schema}, deleteEventController);
 }
