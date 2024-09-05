@@ -31,8 +31,12 @@ const bodyJsonSchema = {
 	}
   }
 
-  const schema = {
+  const schemaBody = {
 	body: bodyJsonSchema,
+	params: paramsJsonSchema,
+  }
+
+  const schemaParam = {
 	params: paramsJsonSchema,
   }
 
@@ -41,26 +45,26 @@ export default async function eventAddressRoutes(
 	fastify: FastifyInstance
 ): Promise<void> {
 	fastify.addHook('preHandler', authMiddleware);
-	fastify.post('/events-address/event/:eventId', {schema}, createEventAddressController);
-	fastify.get('/events-address/events/:eventId', {schema}, getEventsAddressesController);
+	fastify.post('/events-address/event/:eventId', {schema: schemaBody}, createEventAddressController);
+	fastify.get('/events-address/events/:eventId', {schema: schemaParam}, getEventsAddressesController);
 	fastify.get(
 		'/events-address/:id/event/:eventId',
-		{schema},
+		{schema: schemaParam},
 		findEventAddressByIdController
 	);
 	fastify.get(
 		'/events-address/event/:eventId',
-		{schema}, 
+		{schema: schemaParam}, 
 		findEventAddressByEventIdController
 	);
 	fastify.put(
 		'/events-address/:id/event/:eventId', 
-		{schema}, 
+		{schema: schemaBody}, 
 		updateEventAddressController
 	);
 	fastify.delete(
 		'/events-address/:id/event/:eventId',
-		{schema},
+		{schema: schemaParam},
 		deleteEventAddressController
 	);
 }
