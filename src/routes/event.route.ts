@@ -30,8 +30,12 @@ const bodyJsonSchema = {
 	}
   }
 
-  const schema = {
+  const schemaBody = {
 	body: bodyJsonSchema,
+	params: paramsJsonSchema,
+  }
+
+  const schemaParams = {
 	params: paramsJsonSchema,
   }
 
@@ -40,7 +44,7 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.addHook('preHandler', authMiddleware);
 
 	// Create Event
-	fastify.post('/events', {schema}, createEventController);
+	fastify.post('/events', {schema: schemaBody}, createEventController);
 
 	// Get All Events
 	fastify.get('/user-events', getUserEventsController);
@@ -52,11 +56,11 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 	fastify.get('/events', getEventsController);
 
 	// Get Single Event by ID
-	fastify.get('/events/:eventId', {schema}, findEventByIdController);
+	fastify.get('/events/:eventId', {schema: schemaParams}, findEventByIdController);
 
 	// Update Event by ID
-	fastify.put('/events/:eventId', {schema}, updateEventController);
+	fastify.put('/events/:eventId', {schema: schemaBody}, updateEventController);
 
 	// Delete Event by ID
-	fastify.delete('/events/:eventId', {schema}, deleteEventController);
+	fastify.delete('/events/:eventId', {schema: schemaParams}, deleteEventController);
 }
