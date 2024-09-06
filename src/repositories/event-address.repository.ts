@@ -105,7 +105,7 @@ export async function deleteEventAddress(
 	const eventUuid = parseUUID(eventId);
 	const query = `
 	DELETE FROM event_addresses 
-	WHERE id = $1 AND event_id = $2 
+	WHERE address_id = $1 AND event_id = $2 
 	RETURNING *
 	`;
 
