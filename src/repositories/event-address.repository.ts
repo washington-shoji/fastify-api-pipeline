@@ -132,7 +132,7 @@ export async function findEventAddressById(
 	const eventUuid = parseUUID(eventId);
 	const query = `
 	SELECT * FROM event_addresses 
-	WHERE id = $1 AND event_id = $2
+	WHERE address_id = $1 AND event_id = $2
 	`;
 	const client = await pool.connect();
 
