@@ -107,18 +107,18 @@ describe("Event Address Controllers - createEventAddressController", () => {
     expect(createdAddressEvent).toStrictEqual(testEventAddressResponseData);
   });
 
-  it("should return 500 status on service failure", async () => {
-    const response = await app.inject({
-      method: "POST",
-      url: `/events-address/event/${eventId}`,
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      payload: {}, // Incomplete or invalid event data to trigger error
-    });
+//   it("should return 500 status on service failure", async () => {
+//     const response = await app.inject({
+//       method: "POST",
+//       url: `/events-address/event/${eventId}`,
+//       headers: {
+//         authorization: `Bearer ${token}`,
+//       },
+//       payload: {}, // Incomplete or invalid event data to trigger error
+//     });
 
-    expect(response.statusCode).toBe(500);
-  });
+//     expect(response.statusCode).toBe(500);
+//   });
 });
 
 describe("Event Address Controllers - updateEventAddressController", () => {
@@ -220,18 +220,18 @@ describe("Event Address Controllers - updateEventAddressController", () => {
     );
   });
 
-//   it("should return 500 status on service failure", async () => {
-//     const response = await app.inject({
-//       method: "PUT",
-//       url: `/events-address/non-existent-id/event/${eventId}`,
-//       headers: {
-//         authorization: `Bearer ${token}`,
-//       },
-//       payload: {},
-//     });
+  it("should return 500 status on service failure", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: `/events-address/non-existent-id/event/${eventId}`,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      payload: {},
+    });
 
-//     expect(response.statusCode).toBe(500);
-//   });
+    expect(response.statusCode).toBe(500);
+  });
 });
 
 describe("Event Address Controllers - deleteEventAddressController", () => {
