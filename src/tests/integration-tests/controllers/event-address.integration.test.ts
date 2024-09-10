@@ -110,11 +110,11 @@ describe("Event Address Controllers - createEventAddressController", () => {
   it("should return 500 status on service failure", async () => {
     const response = await app.inject({
       method: "POST",
-      url: `/events-address/event/${eventId}`,
+      url: `/events-address/event/non-existent-id`,
       headers: {
         authorization: `Bearer ${token}`,
       },
-      payload: {}, // Incomplete or invalid event data to trigger error
+      payload: {},
     });
 
     expect(response.statusCode).toBe(500);
