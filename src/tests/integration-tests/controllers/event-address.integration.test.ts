@@ -223,7 +223,7 @@ describe("Event Address Controllers - updateEventAddressController", () => {
   it("should return 500 status on service failure", async () => {
     const response = await app.inject({
       method: "PUT",
-      url: `/events-address/non-existent-id/event/${eventId}`,
+      url: `/events-address/non-existent-id/event/non-existent-id`,
       headers: {
         authorization: `Bearer ${token}`,
       },
