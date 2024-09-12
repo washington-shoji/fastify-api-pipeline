@@ -1,9 +1,10 @@
 name: Production CI Vercel Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 on:
   push:
-    branches: [prod-vercel-deployment]
-  pull_request:
     branches: [prod-vercel-deployment]
 
 jobs:
@@ -33,9 +34,6 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      #SET ENVIRONMENT IN VERCEL. 
-      #CREATE ENVIRONMENT IN VERCEL & BUILD IN VERCEL.
-      # GITHUB.COM > SETTINGS > SECRETS AND VARIABLES > ACTIONS > ENVRIONEMENT SECRETS.
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=development --token=${{ secrets.CI_CD_VERCEL_TOKEN }}
 
