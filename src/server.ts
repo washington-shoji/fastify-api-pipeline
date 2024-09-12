@@ -52,8 +52,14 @@ async function start() {
 	await runMigrations(); // Ensure tables are set up before starting the server
 
 	try {
-		await app.listen({ port: 3030, host: '0.0.0.0' });
-		console.log(`Server is running at http://localhost:3030`);
+		if(process?.env?.PORT) {
+			const port = parseInt(process?.env?.PORT);
+			await app.listen({ port: port, host: '0.0.0.0' });
+			console.log(`Server is running at http://localhost:${port}`);
+		} else {
+			await app.listen({ port: 3030, host: '0.0.0.0' });
+			console.log(`Server is running at http://localhost:3030`);
+		}
 	} catch (err) {
 		console.log('Server Error: ', err);
 		process.exit(1);
