@@ -1,4 +1,5 @@
 name: Production CI Vercel Deployment
+
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -16,9 +17,10 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -30,15 +32,10 @@ jobs:
       - name: Build project
         run: npm run build
 
-      #INSTALL VERCEL CLI IN SERVER.
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=development --token=${{ secrets.CI_CD_VERCEL_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.CI_CD_VERCEL_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel  
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.CI_CD_VERCEL_TOKEN }}
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.CI_CD_VERCEL_TOKEN }}
+        run: vercel --prod --token=$VERCEL_TOKEN --confirm --env=VERCEL_ORG_ID=${{ secrets.VERCEL_ORG_ID }} --env=VERCEL_PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID }}
