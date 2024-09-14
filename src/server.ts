@@ -1,5 +1,3 @@
-// src/index.ts or wherever your Fastify instance is created
-
 import fastify from 'fastify';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
@@ -47,36 +45,36 @@ app.register(eventRegisteredRoutes, { prefix: '/api/v1' });
 app.register(fileUploadRoutes, { prefix: '/api/v1' });
 app.register(preSignedUrlRoutes, { prefix: '/api/v1' });
 
-// Start the server manually in development mode
-// async function start() {
-// 	await runMigrations(); // Ensure tables are set up before starting the server
-
-// 	try {
-// 		if (process?.env?.PORT) {
-// 			const port = parseInt(process?.env?.PORT);
-// 			await app.listen({ port: port, host: '0.0.0.0' });
-// 			console.log(`Server is running at http://localhost:${port}`);
-// 		} else {
-// 			await app.listen({ port: 3030, host: '0.0.0.0' });
-// 			console.log(`Server is running at http://localhost:3030`);
-// 		}
-// 	} catch (err) {
-// 		console.log('Server Error: ', err);
-// 		process.exit(1);
-// 	}
-// }
-
-// start();
-
-// Instead of starting the server, export a handler function for Vercel deployment
-// Instead of starting the server, export a handler function
-export default async (req: any, res: any) => {
+// Function to prepare the server
+async function buildServer() {
 	// Run migrations if necessary
 	await runMigrations();
-
-	// Ensure the app is ready to accept requests
+	// Ensure the app is ready
 	await app.ready();
+	return app;
+}
 
-	// Handle the incoming request
+// Export the handler for Vercel deployment
+export default async (req: any, res: any) => {
+	const app = await buildServer();
+
+	// Handle the request
 	app.server.emit('request', req, res);
 };
+
+// Start the server locally if not in a serverless environment
+if (require.main === module) {
+	runSeverLocally();
+}
+
+async function runSeverLocally() {
+	try {
+		const app = await buildServer();
+		const port = process.env.PORT || 3030;
+		await app.listen({ port: Number(port), host: '0.0.0.0' });
+		console.log(`Server is running at http://localhost:${port}`);
+	} catch (err) {
+		console.error('Server Error:', err);
+		process.exit(1);
+	}
+}
