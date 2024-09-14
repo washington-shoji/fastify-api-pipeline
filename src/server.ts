@@ -18,7 +18,7 @@ import eventRegisteredRoutes from './routes/event-registered.route';
 import preSignedUrlRoutes from './routes/upload-presigned-url.route';
 import healthCheckRoutes from './routes/helth-check.route';
 
-const app = fastify({logger: true});
+const app = fastify({ logger: true });
 
 app.register(cors, {
 	origin: '*',
@@ -47,23 +47,36 @@ app.register(eventRegisteredRoutes, { prefix: '/api/v1' });
 app.register(fileUploadRoutes, { prefix: '/api/v1' });
 app.register(preSignedUrlRoutes, { prefix: '/api/v1' });
 
-// Start the server
-async function start() {
-	await runMigrations(); // Ensure tables are set up before starting the server
+// Start the server manually in development mode
+// async function start() {
+// 	await runMigrations(); // Ensure tables are set up before starting the server
 
-	try {
-		if(process?.env?.PORT) {
-			const port = parseInt(process?.env?.PORT);
-			await app.listen({ port: port, host: '0.0.0.0' });
-			console.log(`Server is running at http://localhost:${port}`);
-		} else {
-			await app.listen({ port: 3030, host: '0.0.0.0' });
-			console.log(`Server is running at http://localhost:3030`);
-		}
-	} catch (err) {
-		console.log('Server Error: ', err);
-		process.exit(1);
-	}
-}
+// 	try {
+// 		if (process?.env?.PORT) {
+// 			const port = parseInt(process?.env?.PORT);
+// 			await app.listen({ port: port, host: '0.0.0.0' });
+// 			console.log(`Server is running at http://localhost:${port}`);
+// 		} else {
+// 			await app.listen({ port: 3030, host: '0.0.0.0' });
+// 			console.log(`Server is running at http://localhost:3030`);
+// 		}
+// 	} catch (err) {
+// 		console.log('Server Error: ', err);
+// 		process.exit(1);
+// 	}
+// }
 
-start();
+// start();
+
+// Instead of starting the server, export a handler function for Vercel deployment
+// Instead of starting the server, export a handler function
+export default async (req: any, res: any) => {
+	// Run migrations if necessary
+	await runMigrations();
+
+	// Ensure the app is ready to accept requests
+	await app.ready();
+
+	// Handle the incoming request
+	app.server.emit('request', req, res);
+};
