@@ -30,7 +30,7 @@ app.register(fastifyRateLimit, {
 });
 
 // Register health check routes
-app.register(healthCheckRoutes, { prefix: '/api/v1' });
+app.register(healthCheckRoutes);
 
 // Register public event routes
 app.register(publicEventRoutes, { prefix: '/api/v1' });
