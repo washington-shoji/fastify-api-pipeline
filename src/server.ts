@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
@@ -55,12 +55,14 @@ async function buildServer() {
 }
 
 // Export the handler for Vercel deployment
-export default async (req: any, res: any) => {
+export default async function vercelHandler(
+	req: FastifyRequest,
+	res: FastifyReply
+): Promise<void> {
 	const app = await buildServer();
-
 	// Handle the request
 	app.server.emit('request', req, res);
-};
+}
 
 // Start the server locally if not in a serverless environment
 if (require.main === module) {
