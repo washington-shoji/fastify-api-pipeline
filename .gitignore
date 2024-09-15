@@ -11,4 +11,4 @@ coverage
 /dist
 
 # http-client
-test-http.http
+api-rest-client.http

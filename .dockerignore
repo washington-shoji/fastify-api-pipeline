@@ -6,4 +6,4 @@ Dockerfile
 .gitignore
 .npmrc
 .env
-test-http.http
+api-rest-client.http
