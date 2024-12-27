@@ -3,9 +3,9 @@ import { EventImageModel } from '../models/event-image-model';
 import { generateUUIDv7, parseUUID } from '../utils/uuidgenerator.utils';
 
 export async function createEventImage(imageData: EventImageModel) {
-	const { eventId, imageUrl, imageKey } = imageData;
+	const { eventId, imageUrl } = imageData;
 	const uuid = generateUUIDv7();
-	const query = `INSERT INTO event_image (id, event_id, image_url, image_key)
+	const query = `INSERT INTO event_images (id, event_id, image_url, image_key)
     VALUES ($1, $2, $3, $4) Returning *`;
 
 	const client = await pool.connect();
@@ -13,12 +13,7 @@ export async function createEventImage(imageData: EventImageModel) {
 	try {
 		await client.query('BEGIN');
 
-		const result = await client.query(query, [
-			uuid,
-			eventId,
-			imageUrl,
-			imageKey,
-		]);
+		const result = await client.query(query, [uuid, eventId, imageUrl, uuid]);
 
 		await client.query('COMMIT');
 
