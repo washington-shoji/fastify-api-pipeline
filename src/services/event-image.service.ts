@@ -7,7 +7,11 @@ import {
 	getEventsImage,
 	updateEventImage,
 } from '../repositories/event-image.repository';
-import { deleteFileFromS3, uploadImageFileToS3 } from './s3.service';
+import {
+	createPresignedUrlWithClient,
+	deleteFileFromS3,
+	uploadImageFileToS3,
+} from './s3.service';
 import { findEventById } from '../repositories/event.repository';
 
 export async function createEventImageService(
@@ -94,7 +98,7 @@ export async function updateEventImageService(
 			throw new Error('Event image does not exists');
 		}
 
-		await deleteFileFromS3(existingImage.imageKey, bucketName);
+		await deleteFileFromS3(existingImage.imageKey as string, bucketName);
 
 		const imageResponse = await uploadImageFileToS3(
 			buffer,
@@ -133,7 +137,7 @@ export async function deleteEventImageService(imageId: string) {
 		}
 
 		const deleteImageResponse = await deleteFileFromS3(
-			existingImage.imageKey,
+			existingImage.imageKey as string,
 			bucketName
 		);
 		if (deleteImageResponse) {
@@ -142,5 +146,33 @@ export async function deleteEventImageService(imageId: string) {
 	} catch (error) {
 		console.log(error, 'Error deleting event images');
 		throw new Error('Failed to delete event images. Please try again later.');
+	}
+}
+
+export async function createEventPreSignedImageService(
+	eventId: string,
+	userId: string
+): Promise<string> {
+	try {
+		const existingEvent = await findEventById(eventId, userId);
+
+		if (!existingEvent) {
+			throw new Error('Event does not exists');
+		}
+
+		const preSignedImageUrlResponse = await createPresignedUrlWithClient();
+
+		if (preSignedImageUrlResponse) {
+			const imageData: EventImageModel = {
+				eventId: existingEvent.id,
+				imageUrl: preSignedImageUrlResponse,
+			};
+
+			await createEventImage(imageData);
+		}
+		return preSignedImageUrlResponse;
+	} catch (error) {
+		console.log(error, 'Error creating event image');
+		throw new Error('Failed to create event image. Please try again later.');
 	}
 }
