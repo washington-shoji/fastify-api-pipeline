@@ -9,6 +9,7 @@ async function runMigrations() {
 		'refresh_token.sql',
 		'event_addresses.sql',
 		'event_attendees.sql',
+		'event_images.sql',
 	]; // Add more files as needed
 
 	for (const file of migrationFiles) {
