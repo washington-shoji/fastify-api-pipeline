@@ -22,7 +22,7 @@ app.register(cors, {
 	origin: '*',
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 });
-app.register(multipart);
+app.register(multipart, { attachFieldsToBody: true });
 
 app.register(fastifyRateLimit, {
 	max: 100,
