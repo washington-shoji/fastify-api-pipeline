@@ -10,7 +10,6 @@ import { createEventAddress } from '../repositories/event-address.repository';
 import { createEvent } from '../repositories/event.repository';
 import { EventEntityModel, EventResponseModel } from './../models/event-model';
 import { EventImageResponseModel } from '../models/event-image-model';
-import { createPresignedUrlWithClient } from './s3.service';
 import { createEventPreSignedImageService } from './event-image.service';
 
 export async function createEventAllInfoService(
@@ -68,7 +67,8 @@ export async function createEventAllInfoService(
 				postal_code: eventAddressResult.postal_code,
 			},
 			eventImageModel: <EventImageResponseModel>{
-				imageUrl: eventPreSignedImage,
+				presignedUrl: eventPreSignedImage.presignedUrl,
+				fileUrl: eventPreSignedImage.fileUrl,
 			},
 		};
 

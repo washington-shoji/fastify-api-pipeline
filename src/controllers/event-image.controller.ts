@@ -38,8 +38,8 @@ export async function createEventImageController(
 			imageData: {
 				imageId: eventImage?.id,
 				eventId: eventImage?.eventId,
-				imageUrl: eventImage?.imageUrl,
-				imageKey: eventImage?.imageKey,
+				imageUrl: eventImage?.presignedUrl,
+				imageKey: eventImage?.fileUrl,
 			},
 		});
 	} catch (error) {
@@ -71,8 +71,8 @@ export async function updateEventImageController(
 			imageData: {
 				imageId: eventImage?.id,
 				eventId: eventImage?.eventId,
-				imageUrl: eventImage?.imageUrl,
-				imageKey: eventImage?.imageKey,
+				imageUrl: eventImage?.presignedUrl,
+				imageKey: eventImage?.fileUrl,
 			},
 		});
 	} catch (error) {
