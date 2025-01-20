@@ -8,6 +8,7 @@ import {
 	getUserEventsController,
 	getOtherUsersEventsController,
 	createEventAllInfoController,
+	findEventAllInfoByIdController,
 } from '../controllers/event.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
@@ -71,6 +72,9 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 		{ schema: schemaParams },
 		findEventByIdController
 	);
+
+	// Create Event All Info by ID
+	fastify.get('/event-all-info/:eventId', findEventAllInfoByIdController);
 
 	// Update Event by ID
 	fastify.put(
