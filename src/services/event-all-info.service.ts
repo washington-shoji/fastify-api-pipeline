@@ -11,6 +11,7 @@ import { createEvent } from '../repositories/event.repository';
 import { EventEntityModel, EventResponseModel } from './../models/event-model';
 import { EventImageResponseModel } from '../models/event-image-model';
 import { createEventPreSignedImageService } from './event-image.service';
+import { findEventAllInfoById } from '../repositories/event-all-info.repository';
 
 export async function createEventAllInfoService(
 	userId: string,
@@ -74,11 +75,44 @@ export async function createEventAllInfoService(
 
 		return eventAllInfoData;
 	} catch (error) {
-		// Log the error for debugging purposes
 		console.log(error, 'Error creating all data event');
-
-		// Here, you can decide how to handle the error.
-		// For example, you can throw a custom error with a more user-friendly message:
 		throw new Error('Failed to create all data event. Please try again later.');
+	}
+}
+
+export async function findEventAllInfoByIdService(
+	eventId: string,
+	userId: string
+) {
+	try {
+		const eventResult = await findEventAllInfoById(eventId, userId);
+
+		const eventAllInfoData: EventAllInfoResponseModel = {
+			eventModel: <EventResponseModel>{
+				event_id: eventResult.event_id,
+				title: eventResult.title,
+				description: eventResult.description,
+				registration_open: eventResult.registration_open,
+				registration_close: eventResult.registration_close,
+				event_date: eventResult.event_date,
+				location_type: eventResult.location_type,
+			},
+			eventAddressModel: <EventAddressModelResponse>{
+				address_id: eventResult.address_id,
+				street: eventResult.street,
+				city_suburb: eventResult.city_suburb,
+				state: eventResult.state,
+				country: eventResult.country,
+				postal_code: eventResult.postal_code,
+			},
+			eventImageModel: <EventImageResponseModel>{
+				fileUrl: eventResult.file_url,
+			},
+		};
+
+		return eventAllInfoData;
+	} catch (error) {
+		console.log(error, 'Error could not find event');
+		throw new Error('Failed to find event. Please try again later.');
 	}
 }
