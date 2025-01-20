@@ -3,6 +3,7 @@ import { FastifyRequest } from 'fastify/types/request';
 import {
 	createEventImageService,
 	deleteEventImageService,
+	findEventImageByEventIdService,
 	updateEventImageService,
 } from '../services/event-image.service';
 import { findEventImageById } from '../repositories/event-image.repository';
@@ -119,6 +120,24 @@ export async function findByIdEventImageController(
 		});
 	} catch (error) {
 		console.log(error, 'Error handling findByIdEventImageController');
+		reply.code(500).send({ message: 'Error finding event image' });
+	}
+}
+
+export async function findByEventIdEventImageController(
+	request: FastifyRequest<{ Params: { id: string } }>,
+	reply: FastifyReply
+) {
+	try {
+		const imageId = request.params.id;
+		const eventImage = await findEventImageByEventIdService(imageId);
+		reply.code(201).send({
+			imageId: eventImage.id,
+			presignedUrl: eventImage.presignedUrl,
+			fileUrl: eventImage.fileUrl,
+		});
+	} catch (error) {
+		console.log(error, 'Error handling findByEventIdEventImageController');
 		reply.code(500).send({ message: 'Error finding event image' });
 	}
 }
