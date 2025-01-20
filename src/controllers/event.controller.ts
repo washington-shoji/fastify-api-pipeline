@@ -11,7 +11,10 @@ import {
 import { EventRequestModel } from '../models/event-model';
 import { decodeToken } from '../tests/unit-tests/utils/decode-token';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { createEventAllInfoService } from '../services/event-all-info.service';
+import {
+	createEventAllInfoService,
+	findEventAllInfoByIdService,
+} from '../services/event-all-info.service';
 import { EventAllInfoRequestModel } from '../models/event-all-info.model';
 
 export async function createEventController(
@@ -230,5 +233,38 @@ export async function createEventAllInfoController(
 	} catch (error) {
 		console.log(error, 'Error handling createEventAllInfoController');
 		reply.code(500).send({ message: 'Error creating event all info data' });
+	}
+}
+
+export async function findEventAllInfoByIdController(
+	request: FastifyRequest<{
+		Params: {
+			eventId: string;
+		};
+	}>,
+	reply: FastifyReply
+) {
+	try {
+		const token = request.headers.authorization?.split(' ')[1]; // Bearer TOKEN
+		const decoded = decodeToken(token);
+		const userId = decoded?.userId;
+		if (!userId) {
+			return reply.code(401).send({ message: 'Unauthorized' });
+		}
+		const event = await findEventAllInfoByIdService(
+			request.params.eventId,
+			userId
+		);
+		if (!event) {
+			return reply.code(404).send({ message: 'Event not found' });
+		}
+		reply.code(200).send(event);
+	} catch (error) {
+		if (error instanceof TokenExpiredError) {
+			return reply.code(401).send({ message: 'Unauthorized' });
+		}
+
+		reply.code(500).send({ message: 'Error retrieving event' });
+		console.log(error, 'Error handling findEventAllInfoByIdController');
 	}
 }
