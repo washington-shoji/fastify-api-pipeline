@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS event_images (
-    id UUID PRIMARY KEY,
+    image_id UUID PRIMARY KEY,
     event_id UUID UNIQUE REFERENCES events(event_id) ON DELETE CASCADE,
     presigned_url TEXT NOT NULL,
     file_url TEXT NOT NULL,
