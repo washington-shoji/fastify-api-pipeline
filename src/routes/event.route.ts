@@ -73,7 +73,7 @@ export default async function eventRoutes(fastify: FastifyInstance) {
 		findEventByIdController
 	);
 
-	// Create Event All Info by ID
+	// Get Event All Info by ID
 	fastify.get('/event-all-info/:eventId', findEventAllInfoByIdController);
 
 	// Update Event by ID
