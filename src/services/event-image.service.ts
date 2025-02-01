@@ -1,8 +1,12 @@
 import { MultipartFile } from '@fastify/multipart';
-import { EventImageModel } from '../models/event-image-model';
+import {
+	EventImageModel,
+	EventImageResponseModel,
+} from '../models/event-image-model';
 import {
 	createEventImage,
 	deleteEventImage,
+	findEventImageByEventId,
 	findEventImageById,
 	getEventsImage,
 	updateEventImage,
@@ -181,5 +185,19 @@ export async function createEventPreSignedImageService(
 	} catch (error) {
 		console.log(error, 'Error creating event image');
 		throw new Error('Failed to create event image. Please try again later.');
+	}
+}
+
+export async function findEventImageByEventIdService(eventId: string) {
+	try {
+		const repositoryResponse = await findEventImageByEventId(eventId);
+		return <EventImageResponseModel>{
+			id: repositoryResponse.id,
+			presignedUrl: repositoryResponse.presigned_url,
+			fileUrl: repositoryResponse.file_url,
+		};
+	} catch (error) {
+		console.log(error, 'Error finding event image');
+		throw new Error('Failed to find event image. Please try again later.');
 	}
 }
