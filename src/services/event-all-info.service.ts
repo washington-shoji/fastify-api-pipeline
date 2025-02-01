@@ -3,6 +3,7 @@ import {
 	EventAddressModelResponse,
 } from '../models/event-address-model';
 import {
+	EventAllInfoEntityModel,
 	EventAllInfoRequestModel,
 	EventAllInfoResponseModel,
 } from '../models/event-all-info.model';
@@ -11,7 +12,10 @@ import { createEvent } from '../repositories/event.repository';
 import { EventEntityModel, EventResponseModel } from './../models/event-model';
 import { EventImageResponseModel } from '../models/event-image-model';
 import { createEventPreSignedImageService } from './event-image.service';
-import { findEventAllInfoById } from '../repositories/event-all-info.repository';
+import {
+	findEventAllInfoById,
+	findEventsAllInfo,
+} from '../repositories/event-all-info.repository';
 
 export async function createEventAllInfoService(
 	userId: string,
@@ -106,6 +110,7 @@ export async function findEventAllInfoByIdService(
 				postal_code: eventResult.postal_code,
 			},
 			eventImageModel: <EventImageResponseModel>{
+				presignedUrl: eventResult.presigned_url,
 				fileUrl: eventResult.file_url,
 			},
 		};
@@ -115,4 +120,47 @@ export async function findEventAllInfoByIdService(
 		console.log(error, 'Error could not find event');
 		throw new Error('Failed to find event. Please try again later.');
 	}
+}
+
+export async function findPublicEventsAllInfoService() {
+	try {
+		const eventResult: EventAllInfoEntityModel[] = await findEventsAllInfo();
+
+		const eventAllInfoData: EventAllInfoResponseModel[] =
+			responseDataTransformerArray(eventResult);
+
+		return eventAllInfoData;
+	} catch (error) {
+		console.log(error, 'Error could not find events');
+		throw new Error('Failed to find events. Please try again later.');
+	}
+}
+
+function responseDataTransformerArray(
+	inputItems: EventAllInfoEntityModel[]
+): EventAllInfoResponseModel[] {
+	return inputItems.map(
+		(input) =>
+			<EventAllInfoResponseModel>{
+				eventModel: <EventResponseModel>{
+					event_id: input.event_id,
+					title: input.title,
+					description: input.description,
+					registration_open: input.registration_open,
+					registration_close: input.registration_close,
+					event_date: input.event_date,
+					location_type: input.location_type,
+				},
+				eventAddressModel: <EventAddressModelResponse>{
+					street: input.street,
+					city_suburb: input.city_suburb,
+					state: input.state,
+					country: input.country,
+					postal_code: input.postal_code,
+				},
+				eventImageModel: <EventImageResponseModel>{
+					fileUrl: input.file_url,
+				},
+			}
+	);
 }
