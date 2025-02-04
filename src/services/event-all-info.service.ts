@@ -15,6 +15,7 @@ import { createEventPreSignedImageService } from './event-image.service';
 import {
 	findEventAllInfoById,
 	findEventsAllInfo,
+	findOtherUsersEventsAllInfo,
 } from '../repositories/event-all-info.repository';
 
 export async function createEventAllInfoService(
@@ -125,6 +126,21 @@ export async function findEventAllInfoByIdService(
 export async function findPublicEventsAllInfoService() {
 	try {
 		const eventResult: EventAllInfoEntityModel[] = await findEventsAllInfo();
+
+		const eventAllInfoData: EventAllInfoResponseModel[] =
+			responseDataTransformerArray(eventResult);
+
+		return eventAllInfoData;
+	} catch (error) {
+		console.log(error, 'Error could not find events');
+		throw new Error('Failed to find events. Please try again later.');
+	}
+}
+
+export async function findPublicEventsOtherUsersAllInfoService(userId: string) {
+	try {
+		const eventResult: EventAllInfoEntityModel[] =
+			await findOtherUsersEventsAllInfo(userId);
 
 		const eventAllInfoData: EventAllInfoResponseModel[] =
 			responseDataTransformerArray(eventResult);
