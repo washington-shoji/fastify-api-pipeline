@@ -1,13 +1,21 @@
 import { MultipartFile } from '@fastify/multipart';
-import { EventImageModel } from '../models/event-image-model';
+import {
+	EventImageModel,
+	EventImageResponseModel,
+} from '../models/event-image-model';
 import {
 	createEventImage,
 	deleteEventImage,
+	findEventImageByEventId,
 	findEventImageById,
 	getEventsImage,
 	updateEventImage,
 } from '../repositories/event-image.repository';
-import { deleteFileFromS3, uploadImageFileToS3 } from './s3.service';
+import {
+	createPresignedUrlWithClient,
+	deleteFileFromS3,
+	uploadImageFileToS3,
+} from './s3.service';
 import { findEventById } from '../repositories/event.repository';
 
 export async function createEventImageService(
@@ -36,16 +44,16 @@ export async function createEventImageService(
 		if (imageResponse && imageResponse.Location && imageResponse.Key) {
 			const imageData: EventImageModel = {
 				eventId: existingEvent.id,
-				imageUrl: imageResponse.Location,
-				imageKey: imageResponse.Key,
+				presignedUrl: imageResponse.Location,
+				fileUrl: imageResponse.Key,
 			};
 
 			const repositoryResponse = await createEventImage(imageData);
 			return <EventImageModel>{
 				id: repositoryResponse.id,
 				eventId: repositoryResponse.event_id,
-				imageUrl: repositoryResponse.image_url,
-				imageKey: repositoryResponse.image_key,
+				presignedUrl: repositoryResponse.image_url,
+				fileUrl: repositoryResponse.image_key,
 			};
 		}
 	} catch (error) {
@@ -60,8 +68,8 @@ export async function findEventImageByIdService(id: string) {
 		return <EventImageModel>{
 			id: repositoryResponse.id,
 			eventId: repositoryResponse.event_id,
-			imageUrl: repositoryResponse.image_url,
-			imageKey: repositoryResponse.image_key,
+			presignedUrl: repositoryResponse.image_url,
+			fileUrl: repositoryResponse.image_key,
 		};
 	} catch (error) {
 		console.log(error, 'Error finding event image');
@@ -94,7 +102,7 @@ export async function updateEventImageService(
 			throw new Error('Event image does not exists');
 		}
 
-		await deleteFileFromS3(existingImage.imageKey, bucketName);
+		await deleteFileFromS3(existingImage.fileUrl as string, bucketName);
 
 		const imageResponse = await uploadImageFileToS3(
 			buffer,
@@ -105,15 +113,15 @@ export async function updateEventImageService(
 		if (imageResponse && imageResponse.Location && imageResponse.Key) {
 			const imageData: EventImageModel = {
 				eventId: existingImage.eventId,
-				imageUrl: imageResponse.Location,
-				imageKey: imageResponse.Key,
+				presignedUrl: imageResponse.Location,
+				fileUrl: imageResponse.Key,
 			};
 			const repositoryResponse = await updateEventImage(imageId, imageData);
 			return <EventImageModel>{
 				id: repositoryResponse.id,
 				eventId: repositoryResponse.event_id,
-				imageUrl: repositoryResponse.image_url,
-				imageKey: repositoryResponse.image_key,
+				presignedUrl: repositoryResponse.image_url,
+				fileUrl: repositoryResponse.image_key,
 			};
 		}
 	} catch (error) {
@@ -133,7 +141,7 @@ export async function deleteEventImageService(imageId: string) {
 		}
 
 		const deleteImageResponse = await deleteFileFromS3(
-			existingImage.imageKey,
+			existingImage.fileUrl as string,
 			bucketName
 		);
 		if (deleteImageResponse) {
@@ -142,5 +150,54 @@ export async function deleteEventImageService(imageId: string) {
 	} catch (error) {
 		console.log(error, 'Error deleting event images');
 		throw new Error('Failed to delete event images. Please try again later.');
+	}
+}
+
+export async function createEventPreSignedImageService(
+	eventId: string,
+	userId: string
+): Promise<{
+	presignedUrl: string;
+	fileUrl: string;
+}> {
+	try {
+		const existingEvent = await findEventById(eventId, userId);
+
+		if (!existingEvent) {
+			throw new Error('Event does not exists');
+		}
+
+		const preSignedImageUrlResponse = await createPresignedUrlWithClient();
+
+		if (preSignedImageUrlResponse) {
+			const imageData: EventImageModel = {
+				eventId: existingEvent.event_id,
+				presignedUrl: preSignedImageUrlResponse.presignedUrl,
+				fileUrl: preSignedImageUrlResponse.fileUrl,
+			};
+
+			await createEventImage(imageData);
+		}
+		return {
+			presignedUrl: preSignedImageUrlResponse.presignedUrl,
+			fileUrl: preSignedImageUrlResponse.fileUrl,
+		};
+	} catch (error) {
+		console.log(error, 'Error creating event image');
+		throw new Error('Failed to create event image. Please try again later.');
+	}
+}
+
+export async function findEventImageByEventIdService(eventId: string) {
+	try {
+		const repositoryResponse = await findEventImageByEventId(eventId);
+		return <EventImageResponseModel>{
+			id: repositoryResponse.id,
+			presignedUrl: repositoryResponse.presigned_url,
+			fileUrl: repositoryResponse.file_url,
+		};
+	} catch (error) {
+		console.log(error, 'Error finding event image');
+		throw new Error('Failed to find event image. Please try again later.');
 	}
 }

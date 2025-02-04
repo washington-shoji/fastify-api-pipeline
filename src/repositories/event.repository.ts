@@ -170,15 +170,7 @@ export async function getUserEvents(userId: string) {
 export async function getOtherUsersEvents(userId: string) {
 	const userUuid = parseUUID(userId);
 	const query = `
-	SELECT
-		e.*,
-		at.attendee_status 
-	FROM
-		events e  
-		LEFT JOIN event_attendees at ON e.event_id = at.event_id 
-	WHERE 
-		e.user_id != $1 AND at.attendee_status = NULL
-	`;
+	SELECT * FROM events WHERE user_id != $1`;
 	const client = await pool.connect();
 
 	try {

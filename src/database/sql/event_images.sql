@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS event_images (
+    image_id UUID PRIMARY KEY,
+    event_id UUID UNIQUE REFERENCES events(event_id) ON DELETE CASCADE,
+    presigned_url TEXT NOT NULL,
+    file_url TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);

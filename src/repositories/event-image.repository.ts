@@ -3,9 +3,9 @@ import { EventImageModel } from '../models/event-image-model';
 import { generateUUIDv7, parseUUID } from '../utils/uuidgenerator.utils';
 
 export async function createEventImage(imageData: EventImageModel) {
-	const { eventId, imageUrl, imageKey } = imageData;
+	const { eventId, presignedUrl, fileUrl } = imageData;
 	const uuid = generateUUIDv7();
-	const query = `INSERT INTO event_image (id, event_id, image_url, image_key)
+	const query = `INSERT INTO event_images (image_id, event_id, presigned_url, file_url)
     VALUES ($1, $2, $3, $4) Returning *`;
 
 	const client = await pool.connect();
@@ -16,8 +16,8 @@ export async function createEventImage(imageData: EventImageModel) {
 		const result = await client.query(query, [
 			uuid,
 			eventId,
-			imageUrl,
-			imageKey,
+			presignedUrl,
+			fileUrl,
 		]);
 
 		await client.query('COMMIT');
@@ -32,15 +32,15 @@ export async function createEventImage(imageData: EventImageModel) {
 }
 
 export async function updateEventImage(id: string, imageData: EventImageModel) {
-	const { imageUrl, imageKey } = imageData;
+	const { presignedUrl, fileUrl } = imageData;
 	const uuid = parseUUID(id);
-	const query = `UPDATE event_image SET image_url = COALESCE($1, image_url), image_key = COALESCE($2, image_key), updated_at = NOW() WHERE id = $3 RETURNING *`;
+	const query = `UPDATE event_image SET presigned_url = COALESCE($1, presigned_url), file_url = COALESCE($2, file_url), updated_at = NOW() WHERE image_id = $3 RETURNING *`;
 
 	const client = await pool.connect();
 
 	try {
 		await client.query('BEGIN');
-		const result = await client.query(query, [imageUrl, imageKey, uuid]);
+		const result = await client.query(query, [presignedUrl, fileUrl, uuid]);
 
 		await client.query('COMMIT');
 		return result.rows[0];
@@ -54,7 +54,7 @@ export async function updateEventImage(id: string, imageData: EventImageModel) {
 
 export async function deleteEventImage(id: string) {
 	const uuid = parseUUID(id);
-	const query = `DELETE FROM event_image WHERE id = $1 RETURNING *`;
+	const query = `DELETE FROM event_image WHERE image_id = $1 RETURNING *`;
 
 	const client = await pool.connect();
 
@@ -75,7 +75,7 @@ export async function deleteEventImage(id: string) {
 
 export async function findEventImageById(id: string) {
 	const uuid = parseUUID(id);
-	const query = `SELECT * FROM event_image WHERE id = $1`;
+	const query = `SELECT * FROM event_image WHERE image_id = $1`;
 
 	const result = await pool.query(query, [uuid]);
 
@@ -88,4 +88,13 @@ export async function getEventsImage() {
 	const result = await pool.query(query);
 
 	return result.rows;
+}
+
+export async function findEventImageByEventId(eventId: string) {
+	const uuid = parseUUID(eventId);
+	const query = `SELECT * FROM event_images WHERE event_id = $1`;
+
+	const result = await pool.query(query, [uuid]);
+
+	return result.rows[0];
 }

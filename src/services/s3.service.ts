@@ -6,6 +6,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { generateUUIDv7 } from '../utils/uuidgenerator.utils';
 
 export async function uploadImageFileToS3(
 	fileBuffer: Buffer,
@@ -55,16 +56,21 @@ export async function deleteFileFromS3(fileName: string, bucketName: string) {
 	}
 }
 
-export async function createPresignedUrlWithClient(): Promise<string> {
+export async function createPresignedUrlWithClient(): Promise<{
+	presignedUrl: string;
+	fileUrl: string;
+}> {
+	const uuid = generateUUIDv7();
 	const bucketName = process.env.S3_BUCKET as string;
-	const key = `${Math.random().toString()}.png`;
+	const fileKey = `${uuid.toString()}.png`;
 	const client = s3Client;
 	const command = new PutObjectCommand({
 		Bucket: bucketName,
-		Key: key,
+		Key: fileKey,
 		ACL: ObjectCannedACL.public_read,
 	});
 	const presignedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+	const fileUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${fileKey}`;
 
-	return presignedUrl;
+	return { presignedUrl: presignedUrl, fileUrl: fileUrl };
 }
