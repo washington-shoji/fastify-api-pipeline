@@ -14,6 +14,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import {
 	createEventAllInfoService,
 	findEventAllInfoByIdService,
+	findPublicEventsOtherUsersAllInfoService,
 } from '../services/event-all-info.service';
 import { EventAllInfoRequestModel } from '../models/event-all-info.model';
 
@@ -109,7 +110,7 @@ export async function getOtherUsersEventsController(
 			return reply.code(401).send({ message: 'Unauthorized' });
 		}
 
-		const events = await getOtherUsersEventsService(userId);
+		const events = await findPublicEventsOtherUsersAllInfoService(userId);
 		reply.code(200).send(events);
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
