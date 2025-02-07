@@ -21,11 +21,13 @@ export async function findAllRegisteredEventsByUser(
         a.city_suburb,
         a.state,
         a.country,
-        a.postal_code
+        a.postal_code,
+        i.file_url
     FROM 
         event_attendees at
         LEFT JOIN events e ON e.event_id = at.event_id
         LEFT JOIN event_addresses a ON a.event_id = at.event_id
+        LEFT JOIN event_images i ON i.event_id = at.event_id
     WHERE
         at.user_id = $1     
 `;
