@@ -16,6 +16,7 @@ export interface RegisteredEventModel {
 	state: string;
 	country: string;
 	postal_code: string;
+	file_url: string;
 }
 
 export interface RegisteredEventResponseModel {
@@ -38,5 +39,8 @@ export interface RegisteredEventResponseModel {
 		state: string;
 		country: string;
 		postal_code: string;
+	};
+	image: {
+		file_url: string;
 	};
 }
