@@ -15,6 +15,7 @@ import eventAttendeeRoutes from './routes/event-attendee.route';
 import eventRegisteredRoutes from './routes/event-registered.route';
 import preSignedUrlRoutes from './routes/upload-presigned-url.route';
 import healthCheckRoutes from './routes/helth-check.route';
+import eventStatsRoutes from './routes/event-stats.route';
 
 const app = fastify({ logger: true });
 
@@ -34,6 +35,9 @@ app.register(healthCheckRoutes);
 
 // Register public event routes
 app.register(publicEventRoutes, { prefix: '/api/v1' });
+
+// Register events stats routes
+app.register(eventStatsRoutes, { prefix: '/api/v1' });
 
 // Register event routes
 app.register(eventRoutes, { prefix: '/api/v1' });
