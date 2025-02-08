@@ -6,7 +6,6 @@ import {
 	updateEventService,
 	deleteEventService,
 	getUserEventsService,
-	getOtherUsersEventsService,
 } from '../services/event.service';
 import { EventRequestModel } from '../models/event-model';
 import { decodeToken } from '../tests/unit-tests/utils/decode-token';
