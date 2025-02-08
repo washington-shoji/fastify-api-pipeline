@@ -45,6 +45,9 @@ function responseDataTransformer(
 			country: input?.country ?? null,
 			postal_code: input?.postal_code ?? null,
 		},
+		image: {
+			file_url: input?.file_url ?? null,
+		},
 	};
 }
 
@@ -73,6 +76,9 @@ function responseDataTransformerArray(
 					state: input?.state ?? null,
 					country: input?.country ?? null,
 					postal_code: input?.postal_code ?? null,
+				},
+				image: {
+					file_url: input?.file_url ?? null,
 				},
 			}
 	);
